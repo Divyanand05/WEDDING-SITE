@@ -1,31 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Calendar,
   Clock,
   MapPin,
   MessageCircle,
   ExternalLink,
-  Heart,
-  Sparkles,
   Share2,
-  Check,
-  GlassWater,
-  HeartHandshake,
-  UtensilsCrossed,
-  Music,
+  Menu,
+  X,
+  Send,
 } from 'lucide-react';
-import { weddingConfig, WeddingEvent } from '../config/weddingConfig';
+import { weddingConfig } from '../config/weddingConfig';
 
-const iconMap: Record<string, React.ReactNode> = {
-  GlassWater: <GlassWater className="w-5 h-5 text-[#C5A059]" />,
-  HeartHandshake: <HeartHandshake className="w-5 h-5 text-[#C5A059]" />,
-  Sparkles: <Sparkles className="w-5 h-5 text-[#C5A059]" />,
-  UtensilsCrossed: <UtensilsCrossed className="w-5 h-5 text-[#C5A059]" />,
-  Music: <Music className="w-5 h-5 text-[#C5A059]" />,
-};
+
+interface Blessing {
+  name: string;
+  message: string;
+  date: string;
+}
 
 export const InvitationContent: React.FC = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Blessings Guest Book State
+  const [blessings, setBlessings] = useState<Blessing[]>([
+    {
+      name: "Suresh & Family",
+      message: "Wishing Jananee & Arivannal a lifetime of love, laughter, and endless happiness together!",
+      date: "Today",
+    },
+    {
+      name: "Anitha R.",
+      message: "So thrilled to celebrate your special day! May your bond grow stronger with each passing day.",
+      date: "Yesterday",
+    },
+  ]);
+
+  const [guestName, setGuestName] = useState('');
+  const [guestMessage, setGuestMessage] = useState('');
+  const [submittedBlessing, setSubmittedBlessing] = useState(false);
+
   // Live Countdown State
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
@@ -33,8 +48,6 @@ export const InvitationContent: React.FC = () => {
     minutes: number;
     seconds: number;
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-  const [copiedAddress, setCopiedAddress] = useState(false);
 
   useEffect(() => {
     const target = new Date(weddingConfig.schedule.isoDate).getTime();
@@ -60,806 +73,852 @@ export const InvitationContent: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCopyAddress = () => {
-    const fullAddress = `${weddingConfig.venue.name}, ${weddingConfig.venue.streetAddress}, ${weddingConfig.venue.cityStateZip}`;
-    navigator.clipboard.writeText(fullAddress);
-    setCopiedAddress(true);
-    setTimeout(() => setCopiedAddress(false), 2500);
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: 'Jananee & Arivannal Wedding Invitation',
+          text: 'You are warmly invited to celebrate the wedding of Jananee & Arivannal!',
+          url: window.location.href,
+        })
+        .catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
   };
 
-  const getWhatsAppUrl = () => {
-    const phone = weddingConfig.rsvp.whatsappNumber;
-    const msg = encodeURIComponent(weddingConfig.rsvp.defaultMessageTemplate);
-    return `https://wa.me/${phone}?text=${msg}`;
-  };
+  const handleAddBlessing = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestName.trim() || !guestMessage.trim()) return;
 
-  const getGoogleCalendarUrl = () => {
-    const title = encodeURIComponent(`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}'s Wedding`);
-    const details = encodeURIComponent(weddingConfig.couple.welcomeMessage);
-    const location = encodeURIComponent(`${weddingConfig.venue.name}, ${weddingConfig.venue.streetAddress}, ${weddingConfig.venue.cityStateZip}`);
-    // 20260917T130000Z format for September 17 2026
-    const startTime = "20260917T130000Z";
-    const endTime = "20260917T183000Z";
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}`;
-  };
-
-  // Stagger container animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.18,
-        delayChildren: 0.1,
+    setBlessings([
+      {
+        name: guestName,
+        message: guestMessage,
+        date: 'Just now',
       },
-    },
+      ...blessings,
+    ]);
+
+    setGuestName('');
+    setGuestMessage('');
+    setSubmittedBlessing(true);
+    setTimeout(() => setSubmittedBlessing(false), 3500);
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 24 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
-    },
+  const scrollToSection = (id: string) => {
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
     <div
       style={{
+        width: '100%',
         minHeight: '100vh',
-        width: '100%',
-        backgroundImage: 'url(/assets/details_bg.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center top',
-        backgroundAttachment: 'scroll',
+        backgroundColor: '#FAF7F2',
+        color: '#2C2520',
+        fontFamily: 'var(--font-sans)',
         position: 'relative',
+        overflowX: 'hidden',
       }}
     >
-      {/* Warm paper overlay */}
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(253, 251, 247, 0.35)', pointerEvents: 'none' }} />
-
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      style={{
-        width: '100%',
-        maxWidth: '720px',
-        margin: '0 auto',
-        padding: '30px 16px 80px',
-        position: 'relative',
-        zIndex: 10,
-      }}
-    >
-      {/* 1. HERO INVITATION CARD (Screen 3) */}
-      <motion.section
-        variants={itemVariants}
-        className="glass-panel border-gold-double"
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          1. NAVIGATION HEADER (Matching Screenshot 2)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <header
         style={{
-          borderRadius: '24px',
-          padding: '0 0 44px 0',
-          textAlign: 'center',
-          marginBottom: '32px',
-          boxShadow: 'var(--shadow-luxury)',
-          position: 'relative',
-          overflow: 'hidden',
-          background: 'linear-gradient(180deg, #FFFDF9 0%, rgba(250, 244, 235, 0.9) 100%)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          padding: '16px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'linear-gradient(to bottom, rgba(20, 10, 5, 0.75) 0%, rgba(20, 10, 5, 0.0) 100%)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
         }}
       >
-        {/* Full Uncropped Portrait Frame with Couple Photo */}
+        {/* Logo Monogram JA */}
         <div
+          onClick={() => scrollToSection('home')}
           style={{
-            padding: '36px 20px 12px 20px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1.4rem',
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            color: '#F4E5C3',
+            cursor: 'pointer',
+            textShadow: '0 2px 8px rgba(0,0,0,0.5)',
           }}
         >
-          {/* Monogram Badge */}
+          JA
+        </div>
+
+        {/* Desktop Navigation Links */}
+        <nav
+          style={{
+            display: 'none',
+            gap: '32px',
+            alignItems: 'center',
+          }}
+          className="md:flex"
+        >
+          {['HOME', 'EVENTS', 'MOMENTS', 'BLESSINGS'].map((link) => (
+            <button
+              key={link}
+              onClick={() => scrollToSection(link.toLowerCase())}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                letterSpacing: '0.22em',
+                color: '#F4E5C3',
+                cursor: 'pointer',
+                transition: 'color 0.3s ease',
+                textShadow: '0 2px 6px rgba(0,0,0,0.6)',
+              }}
+            >
+              {link}
+            </button>
+          ))}
+        </nav>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#F4E5C3',
+            cursor: 'pointer',
+            padding: '4px',
+          }}
+        >
+          {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
           <div
             style={{
-              padding: '6px 18px',
-              background: 'rgba(255, 253, 249, 0.9)',
-              borderRadius: '999px',
-              border: '1px solid rgba(212, 175, 55, 0.5)',
-              boxShadow: '0 4px 15px rgba(212, 175, 55, 0.15)',
+              position: 'fixed',
+              top: '60px',
+              left: 0,
+              right: 0,
+              background: 'rgba(25, 16, 12, 0.95)',
+              backdropFilter: 'blur(16px)',
+              padding: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              alignItems: 'center',
+              borderBottom: '1px solid rgba(212, 175, 55, 0.3)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+            }}
+          >
+            {['HOME', 'EVENTS', 'MOMENTS', 'BLESSINGS'].map((link) => (
+              <button
+                key={link}
+                onClick={() => scrollToSection(link.toLowerCase())}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.25em',
+                  color: '#FDFBF7',
+                  cursor: 'pointer',
+                }}
+              >
+                {link}
+              </button>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          2. HERO HERO BANNER (Matching Screenshot 2 EXACTLY)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section
+        id="home"
+        style={{
+          position: 'relative',
+          width: '100vw',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '120px 20px 60px',
+          backgroundImage: `url(${weddingConfig.couplePhotoUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 25%',
+          backgroundAttachment: 'scroll',
+        }}
+      >
+        {/* Dark Warm Mahogany / Chocolate Overlay matching Screenshot 2 */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'radial-gradient(ellipse at center, rgba(30, 15, 10, 0.65) 0%, rgba(20, 10, 5, 0.82) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            maxWidth: '860px',
+            width: '100%',
+          }}
+        >
+          {/* TOGETHER WITH THEIR FAMILIES, */}
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: 'clamp(0.72rem, 2vw, 0.88rem)',
+              fontWeight: 600,
+              letterSpacing: '0.32em',
+              textTransform: 'uppercase',
+              color: '#D4AF37',
               marginBottom: '20px',
             }}
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: 'var(--color-gold-deep)',
-                letterSpacing: '0.2em',
-              }}
-            >
-              {weddingConfig.couple.monogram}
-            </span>
-          </div>
-
-          {/* Golden Portrait Frame displaying the WHOLE uncropped photo */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '360px',
-              borderRadius: '20px',
-              padding: '8px',
-              background: 'linear-gradient(135deg, #ECC880 0%, #D4AF37 50%, #AA7C11 100%)',
-              boxShadow: '0 16px 40px rgba(60, 40, 20, 0.22), 0 0 25px rgba(212, 175, 55, 0.3)',
-              marginBottom: '24px',
-            }}
-          >
-            <div
-              style={{
-                borderRadius: '14px',
-                overflow: 'hidden',
-                background: '#FFFDF9',
-                border: '1px solid rgba(255, 255, 255, 0.8)',
-              }}
-            >
-              <img
-                src={weddingConfig.couplePhotoUrl}
-                alt={`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}`}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  display: 'block',
-                  objectFit: 'contain',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Content Container below Hero Photo */}
-        <div style={{ padding: '0 24px' }}>
-
-          {/* Small Intro Tag */}
-          <p
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '0.75rem',
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold-deep)',
-              marginBottom: '14px',
-              marginTop: '8px',
-            }}
-          >
-            THE WEDDING CELEBRATION OF
+            TOGETHER WITH THEIR FAMILIES,
           </p>
 
-
-        {/* Screen 3 Large text: GROOM NAME & BRIDE NAME */}
-        <h1
-          style={{
-            fontFamily: 'var(--font-script)',
-            fontSize: 'clamp(2.8rem, 8vw, 4.2rem)',
-            lineHeight: 1.15,
-            color: '#342921',
-            marginBottom: '12px',
-          }}
-        >
-          {weddingConfig.couple.groom.firstName}
-          <span
-            style={{
-              display: 'block',
-              fontFamily: 'var(--font-serif-luxury)',
-              fontSize: '1.6rem',
-              color: 'var(--color-gold-primary)',
-              fontStyle: 'italic',
-              margin: '2px 0',
-            }}
-          >
-            &
-          </span>
-          {weddingConfig.couple.bride.firstName}
-        </h1>
-
-        {/* Full Names subtitle */}
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.82rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: '#6B5E54',
-            marginBottom: '28px',
-          }}
-        >
-          {weddingConfig.couple.groom.fullName} &amp; {weddingConfig.couple.bride.fullName}
-        </p>
-
-        {/* Delicate divider */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '14px',
-            margin: '0 auto 28px',
-            maxWidth: '280px',
-          }}
-        >
-          <span style={{ height: '1px', flex: 1, backgroundColor: 'rgba(212, 175, 55, 0.4)' }} />
-          <Heart style={{ width: '14px', height: '14px', fill: '#C5A059', color: '#C5A059' }} />
-          <span style={{ height: '1px', flex: 1, backgroundColor: 'rgba(212, 175, 55, 0.4)' }} />
-        </div>
-
-        {/* Screen 3 Text Below: Together with our families... */}
-        <p
-          style={{
-            fontFamily: 'var(--font-serif-luxury)',
-            fontSize: '1.25rem',
-            lineHeight: 1.6,
-            color: '#42362C',
-            maxWidth: '520px',
-            margin: '0 auto 16px',
-            fontStyle: 'italic',
-          }}
-        >
-          "{weddingConfig.couple.welcomeMessage}"
-        </p>
-
-        {/* Parents mention */}
-        <div
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '0.78rem',
-            color: '#8A7C72',
-            letterSpacing: '0.08em',
-            marginTop: '18px',
-          }}
-        >
-          <p>{weddingConfig.couple.groom.parents}</p>
-          <p style={{ marginTop: '4px' }}>{weddingConfig.couple.bride.parents}</p>
-        </div>
-        </div>
-      </motion.section>
-
-      {/* 2. LIVE COUNTDOWN TIMER */}
-      <motion.section
-        variants={itemVariants}
-        style={{
-          marginBottom: '32px',
-          textAlign: 'center',
-        }}
-      >
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.72rem',
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: 'var(--color-gold-deep)',
-            marginBottom: '14px',
-          }}
-        >
-          COUNTING DOWN TO OUR FOREVER
-        </p>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '10px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div className="countdown-box">
-            <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '1.8rem', fontWeight: 600, color: '#3A2E25' }}>
-              {timeLeft.days}
-            </span>
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Days</span>
-          </div>
-          <div className="countdown-box">
-            <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '1.8rem', fontWeight: 600, color: '#3A2E25' }}>
-              {timeLeft.hours}
-            </span>
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Hours</span>
-          </div>
-          <div className="countdown-box">
-            <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '1.8rem', fontWeight: 600, color: '#3A2E25' }}>
-              {timeLeft.minutes}
-            </span>
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Mins</span>
-          </div>
-          <div className="countdown-box">
-            <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '1.8rem', fontWeight: 600, color: 'var(--color-gold-deep)' }}>
-              {timeLeft.seconds}
-            </span>
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Secs</span>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* 3. SCREEN 4: WEDDING DETAILS (Date, Time, Venue, Location, RSVP) */}
-      <motion.section
-        variants={itemVariants}
-        className="glass-panel"
-        style={{
-          borderRadius: '24px',
-          padding: '36px 24px',
-          marginBottom: '32px',
-          border: '1px solid rgba(212, 175, 55, 0.35)',
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold-deep)',
-            }}
-          >
-            SAVE THE DATE
-          </span>
-          <h2
+          {/* Jananee & Arivannal */}
+          <h1
             style={{
               fontFamily: 'var(--font-serif-luxury)',
-              fontSize: 'clamp(2rem, 5vw, 2.6rem)',
-              color: '#342921',
-              marginTop: '6px',
+              fontSize: 'clamp(3rem, 9vw, 5.8rem)',
+              lineHeight: 1.1,
+              color: '#FFFDF9',
+              fontWeight: 400,
+              marginBottom: '22px',
+              textShadow: '0 4px 20px rgba(0,0,0,0.6)',
             }}
           >
-            {weddingConfig.schedule.displayDate}
-          </h2>
+            {weddingConfig.couple.bride.firstName}{' '}
+            <span
+              style={{
+                fontFamily: 'var(--font-script)',
+                fontSize: 'clamp(2.5rem, 7vw, 4.5rem)',
+                color: '#D4AF37',
+                margin: '0 8px',
+              }}
+            >
+              &amp;
+            </span>{' '}
+            {weddingConfig.couple.groom.firstName}
+          </h1>
+
+          {/* Subtitle invitation text */}
           <p
             style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: '0.85rem',
-              color: '#706357',
-              letterSpacing: '0.12em',
-              marginTop: '4px',
+              fontSize: 'clamp(0.9rem, 2.2vw, 1.15rem)',
+              lineHeight: 1.7,
+              color: 'rgba(255, 253, 249, 0.9)',
+              maxWidth: '680px',
+              margin: '0 auto 36px',
+              fontWeight: 300,
+              letterSpacing: '0.04em',
             }}
           >
-            {weddingConfig.schedule.dayOfWeek} at {weddingConfig.schedule.time}
+            {weddingConfig.couple.welcomeMessage}
           </p>
-        </div>
 
-        {/* Date & Location Grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '20px',
-            marginBottom: '32px',
-          }}
-        >
-          {/* Card: Ceremony Time */}
+          {/* CTA Buttons matching Screenshot 2 */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.7)',
-              borderRadius: '16px',
-              padding: '22px',
-              border: '1px solid rgba(212, 175, 55, 0.25)',
-              textAlign: 'center',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '16px',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: '#FAF6EE',
-                border: '1px solid rgba(212, 175, 55, 0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 12px',
-              }}
-            >
-              <Clock style={{ width: '20px', height: '20px', color: '#C5A059' }} />
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.85rem',
-                letterSpacing: '0.15em',
-                color: '#3A2E25',
-                marginBottom: '6px',
-              }}
-            >
-              TIME & SCHEDULE
-            </h3>
-            <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: 'var(--color-gold-deep)', fontWeight: 600 }}>
-              {weddingConfig.schedule.time}
-            </p>
-            <p style={{ fontSize: '0.75rem', color: '#7E7064', marginTop: '4px' }}>
-              Reception to follow ceremony
-            </p>
-          </div>
-
-          {/* Card: Venue Address */}
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.7)',
-              borderRadius: '16px',
-              padding: '22px',
-              border: '1px solid rgba(212, 175, 55, 0.25)',
-              textAlign: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: '#FAF6EE',
-                border: '1px solid rgba(212, 175, 55, 0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 12px',
-              }}
-            >
-              <MapPin style={{ width: '20px', height: '20px', color: '#C5A059' }} />
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.85rem',
-                letterSpacing: '0.15em',
-                color: '#3A2E25',
-                marginBottom: '6px',
-              }}
-            >
-              VENUE LOCATION
-            </h3>
-            <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.15rem', color: '#3A2E25', fontWeight: 600 }}>
-              {weddingConfig.venue.name}
-            </p>
-            {weddingConfig.venue.subVenue && (
-              <p style={{ fontSize: '0.75rem', color: 'var(--color-gold-deep)', fontWeight: 500 }}>
-                {weddingConfig.venue.subVenue}
-              </p>
-            )}
-            <p style={{ fontSize: '0.78rem', color: '#7E7064', marginTop: '4px' }}>
-              {weddingConfig.venue.streetAddress}, {weddingConfig.venue.cityStateZip}
-            </p>
-          </div>
-        </div>
-
-        {/* PRIMARY ACTION BUTTONS: VIEW LOCATION & RSVP */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-            maxWidth: '480px',
-            margin: '0 auto',
-          }}
-        >
-          {/* VIEW LOCATION Button -> Google Maps */}
-          <a
-            href={weddingConfig.venue.googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            id="view-location-button"
-            className="btn-gold"
-            style={{ width: '100%' }}
-          >
-            <MapPin style={{ width: '18px', height: '18px' }} />
-            <span>VIEW LOCATION ON MAPS</span>
-            <ExternalLink style={{ width: '14px', height: '14px', opacity: 0.8 }} />
-          </a>
-
-          {/* RSVP Button -> Configurable WhatsApp */}
-          <a
-            href={getWhatsAppUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-            id="rsvp-button"
-            className="btn-gold"
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
-              borderColor: 'rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 6px 20px rgba(46, 125, 50, 0.35)',
-            }}
-          >
-            <MessageCircle style={{ width: '18px', height: '18px' }} />
-            <span>RSVP VIA WHATSAPP</span>
-            <ExternalLink style={{ width: '14px', height: '14px', opacity: 0.8 }} />
-          </a>
-
-          {/* Secondary Action: Add to Calendar & Copy Address */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '10px',
-              marginTop: '4px',
-            }}
-          >
-            <a
-              href={getGoogleCalendarUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-outline-gold"
-              style={{ fontSize: '0.75rem', padding: '12px 14px' }}
-            >
-              <Calendar style={{ width: '14px', height: '14px', color: '#C5A059' }} />
-              <span>Add to Cal</span>
-            </a>
-
+            {/* VIEW SCHEDULE ↓ */}
             <button
-              onClick={handleCopyAddress}
-              className="btn-outline-gold"
-              style={{ fontSize: '0.75rem', padding: '12px 14px' }}
+              onClick={() => scrollToSection('events')}
+              id="view-schedule-btn"
+              style={{
+                padding: '16px 32px',
+                background: 'linear-gradient(135deg, #C5A059 0%, #A37E30 100%)',
+                color: '#FFFFFF',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
             >
-              {copiedAddress ? (
-                <>
-                  <Check style={{ width: '14px', height: '14px', color: '#2E7D32' }} />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 style={{ width: '14px', height: '14px', color: '#C5A059' }} />
-                  <span>Copy Address</span>
-                </>
-              )}
+              VIEW SCHEDULE ↓
+            </button>
+
+            {/* SHARE INVITATION 🔗 */}
+            <button
+              onClick={handleShare}
+              id="share-invitation-btn"
+              style={{
+                padding: '16px 32px',
+                background: 'rgba(20, 12, 8, 0.65)',
+                color: '#FFFDF9',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                borderRadius: '6px',
+                border: '1px solid rgba(212, 175, 55, 0.6)',
+                backdropFilter: 'blur(8px)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <span>{copiedLink ? 'LINK COPIED!' : 'SHARE INVITATION'}</span>
+              <Share2 size={16} style={{ color: '#D4AF37' }} />
             </button>
           </div>
-        </div>
+        </motion.div>
+      </section>
 
-        {/* RSVP Deadline Note */}
-        <p
-          style={{
-            textAlign: 'center',
-            fontSize: '0.75rem',
-            color: '#8A7B6E',
-            fontStyle: 'italic',
-            marginTop: '20px',
-          }}
-        >
-          Kindly respond by {weddingConfig.rsvp.deadlineDate}
-        </p>
-      </motion.section>
-
-      {/* 4. EVENT TIMELINE / SCHEDULE */}
-      <motion.section
-        variants={itemVariants}
-        className="glass-panel"
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          3. MOMENTS SECTION (Matching Screenshot 1 EXACTLY)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section
+        id="moments"
         style={{
-          borderRadius: '24px',
-          padding: '36px 24px',
-          marginBottom: '32px',
+          padding: '90px 24px',
+          maxWidth: '1200px',
+          margin: '0 auto',
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <span
+        {/* Header: A GLIMPSE OF US / Moments, held forever. */}
+        <div style={{ marginBottom: '48px' }}>
+          <p
             style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: '0.75rem',
-              letterSpacing: '0.28em',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              letterSpacing: '0.3em',
               textTransform: 'uppercase',
-              color: 'var(--color-gold-deep)',
-            }}
-          >
-            ORDER OF CELEBRATION
-          </span>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif-luxury)',
-              fontSize: '1.9rem',
-              color: '#342921',
-              marginTop: '4px',
-            }}
-          >
-            Wedding Itinerary
-          </h2>
-        </div>
-
-        <div style={{ position: 'relative', paddingLeft: '28px', borderLeft: '2px dashed rgba(212, 175, 55, 0.4)', marginLeft: '16px' }}>
-          {weddingConfig.schedule.events.map((event: WeddingEvent, index: number) => (
-            <div
-              key={index}
-              style={{
-                position: 'relative',
-                marginBottom: index === weddingConfig.schedule.events.length - 1 ? '0' : '28px',
-              }}
-            >
-              {/* Timeline Pin */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '-43px',
-                  top: '0',
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  backgroundColor: '#FFFDF9',
-                  border: '2px solid #D4AF37',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                }}
-              >
-                {iconMap[event.iconName] || <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />}
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    display: 'inline-block',
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    color: 'var(--color-gold-deep)',
-                    letterSpacing: '0.12em',
-                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    marginBottom: '4px',
-                  }}
-                >
-                  {event.time}
-                </span>
-                <h4
-                  style={{
-                    fontFamily: 'var(--font-serif-luxury)',
-                    fontSize: '1.25rem',
-                    color: '#382D25',
-                    fontWeight: 600,
-                  }}
-                >
-                  {event.title}
-                </h4>
-                <p
-                  style={{
-                    fontSize: '0.82rem',
-                    color: '#736559',
-                    lineHeight: 1.5,
-                    marginTop: '2px',
-                  }}
-                >
-                  {event.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* 5. DRESS CODE & ATTIRE PALETTE */}
-      <motion.section
-        variants={itemVariants}
-        className="glass-panel"
-        style={{
-          borderRadius: '24px',
-          padding: '32px 24px',
-          marginBottom: '32px',
-          textAlign: 'center',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.75rem',
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color: 'var(--color-gold-deep)',
-          }}
-        >
-          DRESS CODE
-        </span>
-        <h3
-          style={{
-            fontFamily: 'var(--font-serif-luxury)',
-            fontSize: '1.6rem',
-            color: '#342921',
-            margin: '6px 0 10px',
-          }}
-        >
-          {weddingConfig.details.dressCode.title}
-        </h3>
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: '#6E6054',
-            maxWidth: '500px',
-            margin: '0 auto 20px',
-            lineHeight: 1.6,
-          }}
-        >
-          {weddingConfig.details.dressCode.description}
-        </p>
-
-        {/* Color Palette Swatches */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
-          {weddingConfig.details.dressCode.palette.map((color: string, i: number) => (
-            <div
-              key={i}
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                backgroundColor: color,
-                border: '2px solid #FFF',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              }}
-              title={color}
-            />
-          ))}
-        </div>
-      </motion.section>
-
-      {/* 6. GIFT REGISTRY & WISHES */}
-      {weddingConfig.details.giftRegistry && (
-        <motion.section
-          variants={itemVariants}
-          className="glass-panel"
-          style={{
-            borderRadius: '24px',
-            padding: '32px 24px',
-            marginBottom: '32px',
-            textAlign: 'center',
-          }}
-        >
-          <Heart style={{ width: '22px', height: '22px', color: '#C5A059', margin: '0 auto 10px' }} />
-          <h3
-            style={{
-              fontFamily: 'var(--font-serif-luxury)',
-              fontSize: '1.5rem',
-              color: '#342921',
+              color: '#A37E30',
               marginBottom: '10px',
             }}
           >
-            {weddingConfig.details.giftRegistry.title}
-          </h3>
-          <p
+            A GLIMPSE OF US
+          </p>
+          <h2
             style={{
-              fontSize: '0.84rem',
-              color: '#6E6054',
-              maxWidth: '520px',
-              margin: '0 auto',
-              lineHeight: 1.6,
+              fontFamily: 'var(--font-serif-luxury)',
+              fontSize: 'clamp(2.4rem, 6vw, 4rem)',
+              color: '#34251D',
+              fontWeight: 400,
             }}
           >
-            {weddingConfig.details.giftRegistry.note}
-          </p>
-        </motion.section>
-      )}
+            Moments, held{' '}
+            <span
+              style={{
+                fontFamily: 'var(--font-serif-luxury)',
+                fontStyle: 'italic',
+                color: '#A37E30',
+              }}
+            >
+              forever.
+            </span>
+          </h2>
+        </div>
 
-      {/* 7. FOOTER & HASHTAG */}
-      <motion.footer
-        variants={itemVariants}
+        {/* Moments Photo Gallery Cards Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '24px',
+          }}
+        >
+          {/* Card 1: Full Portrait Couple Photo */}
+          <motion.div
+            whileHover={{ y: -6 }}
+            style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 12px 30px rgba(60, 40, 25, 0.12)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+            }}
+          >
+            <div style={{ height: '380px', overflow: 'hidden' }}>
+              <img
+                src={weddingConfig.couplePhotoUrl}
+                alt="Jananee & Arivannal"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 20%',
+                }}
+              />
+            </div>
+            <div style={{ padding: '18px 20px', textAlign: 'center' }}>
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif-luxury)',
+                  fontSize: '1.25rem',
+                  color: '#34251D',
+                  fontStyle: 'italic',
+                }}
+              >
+                "Bound by love and laughter"
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Card 2: Traditional Attire Close-Up */}
+          <motion.div
+            whileHover={{ y: -6 }}
+            style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 12px 30px rgba(60, 40, 25, 0.12)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+            }}
+          >
+            <div style={{ height: '380px', overflow: 'hidden', background: '#F5ECE0' }}>
+              <img
+                src={weddingConfig.couplePhotoUrl}
+                alt="Sacred Union"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 50%',
+                }}
+              />
+            </div>
+            <div style={{ padding: '18px 20px', textAlign: 'center' }}>
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif-luxury)',
+                  fontSize: '1.25rem',
+                  color: '#34251D',
+                  fontStyle: 'italic',
+                }}
+              >
+                "Sacred vows beneath golden sunlight"
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Card 3: Couple Walking Arm-in-Arm */}
+          <motion.div
+            whileHover={{ y: -6 }}
+            style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 12px 30px rgba(60, 40, 25, 0.12)',
+              background: '#FFFFFF',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+            }}
+          >
+            <div style={{ height: '380px', overflow: 'hidden' }}>
+              <img
+                src={weddingConfig.couplePhotoUrl}
+                alt="Together Forever"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 80%',
+                }}
+              />
+            </div>
+            <div style={{ padding: '18px 20px', textAlign: 'center' }}>
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif-luxury)',
+                  fontSize: '1.25rem',
+                  color: '#34251D',
+                  fontStyle: 'italic',
+                }}
+              >
+                "Walking into our forever"
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          4. EVENTS & LOCATION SECTION (EVENTS)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section
+        id="events"
         style={{
-          textAlign: 'center',
-          paddingTop: '20px',
+          padding: '90px 24px',
+          background: 'radial-gradient(circle at 50% 30%, #FFFDF8 0%, #F5ECE0 100%)',
+          borderTop: '1px solid rgba(212, 175, 55, 0.25)',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
         }}
       >
-        <p
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
+              color: '#A37E30',
+              marginBottom: '10px',
+            }}
+          >
+            JOIN US IN CELEBRATION
+          </p>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif-luxury)',
+              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              color: '#34251D',
+              marginBottom: '32px',
+            }}
+          >
+            Wedding Date &amp; Location
+          </h2>
+
+          {/* Countdown Timer Grid */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '14px',
+              marginBottom: '40px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div className="countdown-box">
+              <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '2rem', fontWeight: 600, color: '#3A2E25' }}>
+                {timeLeft.days}
+              </span>
+              <span style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Days</span>
+            </div>
+            <div className="countdown-box">
+              <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '2rem', fontWeight: 600, color: '#3A2E25' }}>
+                {timeLeft.hours}
+              </span>
+              <span style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Hours</span>
+            </div>
+            <div className="countdown-box">
+              <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '2rem', fontWeight: 600, color: '#3A2E25' }}>
+                {timeLeft.minutes}
+              </span>
+              <span style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Mins</span>
+            </div>
+            <div className="countdown-box">
+              <span style={{ display: 'block', fontFamily: 'var(--font-serif-luxury)', fontSize: '2rem', fontWeight: 600, color: '#A37E30' }}>
+                {timeLeft.seconds}
+              </span>
+              <span style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#827468' }}>Secs</span>
+            </div>
+          </div>
+
+          {/* Schedule Details Card */}
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              padding: '36px 28px',
+              boxShadow: '0 12px 36px rgba(60, 40, 20, 0.08)',
+              border: '1px solid rgba(212, 175, 55, 0.3)',
+              marginBottom: '36px',
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'var(--font-serif-luxury)',
+                fontSize: '2rem',
+                color: '#A37E30',
+                marginBottom: '6px',
+              }}
+            >
+              {weddingConfig.schedule.displayDate}
+            </h3>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#6E6054', letterSpacing: '0.1em', marginBottom: '24px' }}>
+              {weddingConfig.schedule.dayOfWeek} at {weddingConfig.schedule.time}
+            </p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '20px',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ background: '#FAF7F2', padding: '20px', borderRadius: '14px', border: '1px solid rgba(212,175,55,0.2)' }}>
+                <Clock style={{ color: '#A37E30', marginBottom: '8px' }} />
+                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.15em', color: '#382D25' }}>TIMING</h4>
+                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: '#A37E30', marginTop: '4px' }}>
+                  {weddingConfig.schedule.time}
+                </p>
+                <p style={{ fontSize: '0.78rem', color: '#7E7064', marginTop: '4px' }}>
+                  Sacred Ceremony followed by Reception
+                </p>
+              </div>
+
+              <div style={{ background: '#FAF7F2', padding: '20px', borderRadius: '14px', border: '1px solid rgba(212,175,55,0.2)' }}>
+                <MapPin style={{ color: '#A37E30', marginBottom: '8px' }} />
+                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.15em', color: '#382D25' }}>LOCATION</h4>
+                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: '#382D25', marginTop: '4px', fontWeight: 600 }}>
+                  {weddingConfig.venue.name}
+                </p>
+                <p style={{ fontSize: '0.78rem', color: '#7E7064', marginTop: '4px' }}>
+                  {weddingConfig.venue.streetAddress}, {weddingConfig.venue.cityStateZip}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '480px', margin: '0 auto' }}>
+            <a
+              href={weddingConfig.venue.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-gold"
+              style={{ width: '100%', padding: '16px' }}
+            >
+              <MapPin size={18} />
+              <span>VIEW LOCATION ON GOOGLE MAPS</span>
+              <ExternalLink size={14} />
+            </a>
+
+            <a
+              href={`https://wa.me/${weddingConfig.rsvp.whatsappNumber}?text=${encodeURIComponent(weddingConfig.rsvp.defaultMessageTemplate)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-gold"
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
+              }}
+            >
+              <MessageCircle size={18} />
+              <span>RSVP VIA WHATSAPP</span>
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          5. GUEST BLESSINGS & WISHES SECTION (BLESSINGS)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section
+        id="blessings"
+        style={{
+          padding: '90px 24px',
+          maxWidth: '900px',
+          margin: '0 auto',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
+              color: '#A37E30',
+              marginBottom: '10px',
+            }}
+          >
+            GUESTBOOK &amp; WISHES
+          </p>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif-luxury)',
+              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              color: '#34251D',
+            }}
+          >
+            Leave Your Blessings
+          </h2>
+          <p style={{ fontSize: '0.9rem', color: '#736559', marginTop: '6px' }}>
+            Share your love &amp; warm wishes for Jananee &amp; Arivannal
+          </p>
+        </div>
+
+        {/* Leave a Blessing Form */}
+        <form
+          onSubmit={handleAddBlessing}
           style={{
-            fontFamily: 'var(--font-script)',
-            fontSize: '2.4rem',
-            color: '#9C7A3C',
-            marginBottom: '4px',
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '32px 24px',
+            boxShadow: '0 12px 30px rgba(60, 40, 20, 0.08)',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            marginBottom: '48px',
           }}
         >
-          With Love, {weddingConfig.couple.groom.firstName} & {weddingConfig.couple.bride.firstName}
+          <div style={{ marginBottom: '18px' }}>
+            <label
+              style={{
+                display: 'block',
+                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
+                letterSpacing: '0.15em',
+                color: '#382D25',
+                marginBottom: '8px',
+              }}
+            >
+              YOUR NAME
+            </label>
+            <input
+              type="text"
+              required
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              placeholder="e.g. Rahul & Priya"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: '10px',
+                border: '1px solid rgba(212, 175, 55, 0.4)',
+                background: '#FAF7F2',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.9rem',
+                color: '#34251D',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '22px' }}>
+            <label
+              style={{
+                display: 'block',
+                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
+                letterSpacing: '0.15em',
+                color: '#382D25',
+                marginBottom: '8px',
+              }}
+            >
+              YOUR BLESSINGS &amp; WISHES
+            </label>
+            <textarea
+              required
+              rows={4}
+              value={guestMessage}
+              onChange={(e) => setGuestMessage(e.target.value)}
+              placeholder="Write a warm message for the couple..."
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: '10px',
+                border: '1px solid rgba(212, 175, 55, 0.4)',
+                background: '#FAF7F2',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.9rem',
+                color: '#34251D',
+                outline: 'none',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+
+          <button type="submit" className="btn-gold" style={{ width: '100%', padding: '14px' }}>
+            <Send size={16} />
+            <span>{submittedBlessing ? 'BLESSING SENT! ❤️' : 'SEND BLESSING'}</span>
+          </button>
+        </form>
+
+        {/* Guest Blessings Stream */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {blessings.map((b, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '22px',
+                border: '1px solid rgba(212, 175, 55, 0.25)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <h4 style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.25rem', color: '#34251D', fontWeight: 600 }}>
+                  {b.name}
+                </h4>
+                <span style={{ fontSize: '0.75rem', color: '#9B8C80' }}>{b.date}</span>
+              </div>
+              <p style={{ fontSize: '0.88rem', color: '#65574E', lineHeight: 1.6, fontStyle: 'italic' }}>
+                "{b.message}"
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          6. FOOTER
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <footer
+        style={{
+          padding: '48px 24px',
+          textAlign: 'center',
+          background: '#251A14',
+          color: '#FFFDF9',
+          borderTop: '1px solid rgba(212, 175, 55, 0.3)',
+        }}
+      >
+        <p style={{ fontFamily: 'var(--font-script)', fontSize: '2.8rem', color: '#D4AF37', marginBottom: '4px' }}>
+          Jananee &amp; Arivannal
         </p>
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.85rem',
-            letterSpacing: '0.2em',
-            color: 'var(--color-gold-deep)',
-            marginTop: '8px',
-          }}
-        >
+        <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.22em', color: '#C5A059' }}>
           {weddingConfig.couple.hashtag}
         </p>
-      </motion.footer>
-    </motion.div>
+        <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
+          September 17, 2026 • Made with ❤️
+        </p>
+      </footer>
     </div>
   );
 };

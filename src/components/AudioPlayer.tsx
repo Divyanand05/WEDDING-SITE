@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
+
 
 // Web Audio API Procedural Sound Effects (Zero External Audio File Dependency)
 export const playHarpChime = () => {
@@ -101,7 +101,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying, onToggle })
       style={{
         position: 'fixed',
         bottom: '20px',
-        right: '20px',
+        left: '20px',
         zIndex: 999,
         display: 'flex',
         alignItems: 'center',
@@ -122,50 +122,28 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying, onToggle })
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '10px 18px',
+          padding: '8px 16px',
           borderRadius: '999px',
-          background: 'rgba(255, 253, 249, 0.9)',
+          background: 'rgba(20, 12, 8, 0.75)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid rgba(212, 175, 55, 0.5)',
-          color: '#5C4E3E',
+          border: '1px solid rgba(212, 175, 55, 0.45)',
+          color: '#F4E5C3',
           cursor: 'pointer',
-          boxShadow: isPlaying
-            ? '0 6px 20px rgba(212, 175, 55, 0.4), 0 0 12px rgba(212, 175, 55, 0.2)'
-            : '0 4px 14px rgba(0, 0, 0, 0.08)',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
           transition: 'all 0.3s ease',
-          fontSize: '0.75rem',
+          fontSize: '0.72rem',
           fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          letterSpacing: '0.1em',
+          fontWeight: 600,
+          letterSpacing: '0.12em',
           textTransform: 'uppercase',
         }}
       >
-        {isPlaying ? (
-          <>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Volume2 style={{ width: '16px', height: '16px', color: '#C5A059' }} />
-              <Sparkles
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  color: '#D4AF37',
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-6px',
-                }}
-              />
-            </div>
-            <span>Music Playing</span>
-          </>
-        ) : (
-          <>
-            <VolumeX style={{ width: '16px', height: '16px', color: '#9B9189' }} />
-            <span style={{ color: '#8A7C72' }}>Music Off</span>
-          </>
-        )}
+        <span>♬</span>
+        <span>{isPlaying ? 'MUSIC ON' : 'MUSIC OFF'}</span>
       </button>
     </div>
   );
+
 };
 

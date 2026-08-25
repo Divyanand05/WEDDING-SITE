@@ -75,24 +75,25 @@ export interface WeddingConfig {
 }
 
 export const weddingConfig = {
-  couplePhotoUrl: '/assets/couple.png',
+  couplePhotoUrl: '/assets/couple.jpg',
   couple: {
     groom: {
-      firstName: "Alexander",
-      fullName: "Alexander James Hayes",
-      parents: "Mr. & Mrs. Robert Hayes",
+      firstName: "Arivannal",
+      fullName: "Arivannal",
+      parents: "Mr. & Mrs. Parents",
     },
     bride: {
-      firstName: "Elena",
-      fullName: "Elena Sofia Vance",
-      parents: "Mr. & Mrs. Edward Vance",
+      firstName: "Jananee",
+      fullName: "Jananee",
+      parents: "Mr. & Mrs. Parents",
     },
-    monogram: "A & E",
-    hashtag: "#ElenaAndAlexForever",
-    storyQuote: "Two souls, one destiny, and a lifetime of love to unfold.",
+    monogram: "JA",
+    hashtag: "#JananeeAndArivannal",
+    storyQuote: "Two hearts, blessed by family & bound by love.",
     welcomeMessage:
-      "Together with our families, we joyfully invite you to celebrate the beginning of our forever.",
+      "joyfully invite you to witness the beginning of their forever — a union of two hearts, blessed by family & bound by love.",
   },
+
   schedule: {
     isoDate: "2026-09-17T18:30:00+05:30",
     displayDate: "17 SEPTEMBER 2026",
