@@ -89,24 +89,77 @@ export const InvitationContent: React.FC = () => {
     }
   };
 
-  const handleAddBlessing = (e: React.FormEvent) => {
+  // Initialize Blessings from localStorage if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('wedding_blessings');
+      if (saved) {
+        setBlessings(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.debug(e);
+    }
+  }, []);
+
+  const handleAddBlessing = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim() || !guestMessage.trim()) return;
 
-    setBlessings([
-      {
-        name: guestName,
-        message: guestMessage,
-        date: 'Just now',
-      },
-      ...blessings,
-    ]);
+    const newBlessing: Blessing = {
+      name: guestName.trim(),
+      message: guestMessage.trim(),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    };
+
+    const updated = [newBlessing, ...blessings];
+    setBlessings(updated);
+
+    try {
+      localStorage.setItem('wedding_blessings', JSON.stringify(updated));
+    } catch (e) {
+      console.debug(e);
+    }
+
+    // Send POST to Google Sheets / Excel Webhook if configured
+    if (weddingConfig.rsvp.excelWebhookUrl) {
+      try {
+        await fetch(weddingConfig.rsvp.excelWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newBlessing),
+        });
+      } catch (err) {
+        console.debug('Webhook POST:', err);
+      }
+    }
 
     setGuestName('');
     setGuestMessage('');
     setSubmittedBlessing(true);
     setTimeout(() => setSubmittedBlessing(false), 3500);
   };
+
+  // Download Guest Blessings directly as Microsoft Excel (.csv) file
+  const downloadExcelSheet = () => {
+    const headers = ['Guest Name', 'Blessings & Message', 'Date Submitted'];
+    const rows = blessings.map((b) => [
+      `"${b.name.replace(/"/g, '""')}"`,
+      `"${b.message.replace(/"/g, '""')}"`,
+      `"${b.date}"`,
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Jananee_Arivannal_Guest_Blessings.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
@@ -782,7 +835,33 @@ export const InvitationContent: React.FC = () => {
           <p style={{ fontSize: '0.9rem', color: '#736559', marginTop: '6px' }}>
             Share your love &amp; warm wishes for Jananee &amp; Arivannal
           </p>
+          <div style={{ marginTop: '16px' }}>
+            <button
+              type="button"
+              onClick={downloadExcelSheet}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                borderRadius: '999px',
+                background: 'rgba(212, 175, 55, 0.12)',
+                border: '1px solid rgba(212, 175, 55, 0.5)',
+                color: '#8C6A28',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <span>📊 Download Blessings Excel Sheet (.csv)</span>
+            </button>
+          </div>
         </div>
+
 
         {/* Leave a Blessing Form */}
         <form

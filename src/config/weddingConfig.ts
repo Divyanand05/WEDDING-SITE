@@ -144,10 +144,13 @@ export const weddingConfig = {
   rsvp: {
     whatsappNumber: "15551234567",
     defaultMessageTemplate:
-      "Hi Alexander & Elena! 💌 I received your beautiful wedding invitation. I would love to RSVP for the wedding on August 25, 2026! My Name: [Your Name] | Number of Guests Attending: [1/2] | Dietary Preferences: [None/Veg/Vegan]",
-    deadlineDate: "10 August 2026",
-    emailContact: "celebrate@alexanderandelena.com",
+      "Hi Jananee & Arivannal! 💌 I received your beautiful wedding invitation. I would love to RSVP for your wedding on September 17, 2026! My Name: [Your Name] | Number of Guests Attending: [1/2]",
+    deadlineDate: "10 September 2026",
+    emailContact: "celebrate@jananeeandarivannal.com",
+    // Excel / Google Sheets Webhook URL (Paste your Google Apps Script / SheetDB Webhook URL here to save directly into Excel!)
+    excelWebhookUrl: "",
   },
+
   details: {
     dressCode: {
       title: "Black-Tie Optional / Romantic Elegance",

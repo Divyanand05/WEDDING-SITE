@@ -28,6 +28,37 @@ Inspired by boutique Etsy stationery invitations, this project features a realis
 
 ---
 
+## 📊 Excel Sheet Storage for Guest Blessings
+
+All guest blessings and wishes submitted on the website are automatically saved and accessible in Excel format in **2 ways**:
+
+### Method 1: 1-Click Excel Download (Built-in & Instant)
+- Click the **`📊 Download Blessings Excel Sheet (.csv)`** button in the BLESSINGS section on the website.
+- Downloads `Jananee_Arivannal_Guest_Blessings.csv` containing all guest names, messages, and timestamps formatted natively for **Microsoft Excel**.
+
+### Method 2: Live Google Sheets / Excel Webhook (Real-Time Cloud Storage)
+To have guest messages automatically append to a live **Google Sheet / Excel** in real time:
+1. Create a Google Sheet titled `Jananee & Arivannal Guest Blessings`.
+2. Go to **Extensions → Apps Script**, paste this code, and click **Deploy as Web App**:
+```javascript
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([data.name, data.message, data.date]);
+  return ContentService.createTextOutput("Success");
+}
+```
+3. Copy the Web App URL and paste it into [`src/config/weddingConfig.ts`](src/config/weddingConfig.ts):
+```typescript
+  rsvp: {
+    excelWebhookUrl: "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE",
+  }
+```
+4. Now every guest blessing will instantly write a new row into your Excel Google Sheet!
+
+---
+
+
 ## ⚙️ Easy Customization
 
 All wedding details are centrally configured in **[`src/config/weddingConfig.ts`](src/config/weddingConfig.ts)**:
