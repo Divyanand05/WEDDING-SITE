@@ -78,21 +78,22 @@ export const weddingConfig = {
   couplePhotoUrl: '/assets/couple.jpg',
   couple: {
     groom: {
-      firstName: "Arivannal",
-      fullName: "Arivannal",
+      firstName: "Dinesshkumar",
+      fullName: "M Dinesshkumar",
       parents: "Mr. & Mrs. Parents",
     },
     bride: {
-      firstName: "Jananee",
-      fullName: "Jananee",
+      firstName: "Jayakavi",
+      fullName: "J Jayakavi",
       parents: "Mr. & Mrs. Parents",
     },
-    monogram: "JA",
-    hashtag: "#JananeeAndArivannal",
+    monogram: "DJ",
+    hashtag: "#DinesshkumarAndJayakavi",
     storyQuote: "Two hearts, blessed by family & bound by love.",
     welcomeMessage:
       "joyfully invite you to witness the beginning of their forever — a union of two hearts, blessed by family & bound by love.",
   },
+
 
   schedule: {
     isoDate: "2026-09-17T18:30:00+05:30",

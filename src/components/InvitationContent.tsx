@@ -154,7 +154,7 @@ export const InvitationContent: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'Jananee_Arivannal_Guest_Blessings.csv');
+    link.setAttribute('download', `${weddingConfig.couple.groom.firstName}_${weddingConfig.couple.bride.firstName}_Guest_Blessings.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -833,7 +833,7 @@ export const InvitationContent: React.FC = () => {
             Leave Your Blessings
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#736559', marginTop: '6px' }}>
-            Share your love &amp; warm wishes for Jananee &amp; Arivannal
+            Share your love &amp; warm wishes for {weddingConfig.couple.bride.firstName} &amp; {weddingConfig.couple.groom.firstName}
           </p>
           <div style={{ marginTop: '16px' }}>
             <button
