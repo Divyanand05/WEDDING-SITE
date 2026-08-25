@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { NotificationScreen } from './components/NotificationScreen';
 import { EnvelopeScreen } from './components/EnvelopeScreen';
+import { NotificationScreen } from './components/NotificationScreen';
 import { InvitationContent } from './components/InvitationContent';
 import { FloatingPetals } from './components/FloatingPetals';
 import { AudioPlayer } from './components/AudioPlayer';
 
-export type ScreenState = 'notification' | 'envelope' | 'invitation';
+// NEW FLOW:
+// 1. envelope  →  user taps envelope, it opens naturally
+// 2. notification  →  "A new chapter is about to begin..." auto-fades in
+// 3. invitation  →  full wedding details auto-reveals after a moment
+
+export type ScreenState = 'envelope' | 'notification' | 'invitation';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<ScreenState>('notification');
+  const [screen, setScreen] = useState<ScreenState>('envelope');
   const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(false);
 
-  // Transition from Screen 1 (Notification) -> Screen 2 (Envelope)
-  const handleOpenNotification = () => {
-    setScreen('envelope');
-    // Start ambient background music on first direct user gesture
+  const handleEnvelopeOpened = () => {
     setIsMusicPlaying(true);
+    setScreen('notification');
   };
 
-  // Transition from Screen 2 (Envelope Animation Finished) -> Screen 3 & 4 (Full Details)
-  const handleEnvelopeOpened = () => {
+  const handleNotificationDone = () => {
     setScreen('invitation');
   };
 
@@ -38,39 +40,36 @@ export const App: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
+        overflow: 'hidden',
       }}
     >
-      {/* Floating Canvas Rose Petals */}
       <FloatingPetals />
-
-      {/* Floating Background Music Controller */}
       <AudioPlayer isPlaying={isMusicPlaying} onToggle={handleToggleMusic} />
 
-      {/* Main Flow Presentation with Cinematic AnimatePresence */}
       <AnimatePresence mode="wait">
-        {screen === 'notification' && (
-          <motion.div
-            key="screen-notification"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
-            transition={{ duration: 0.6 }}
-            style={{ width: '100%' }}
-          >
-            <NotificationScreen onOpen={handleOpenNotification} />
-          </motion.div>
-        )}
-
         {screen === 'envelope' && (
           <motion.div
             key="screen-envelope"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, y: -30, filter: 'blur(6px)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.96, filter: 'blur(6px)' }}
             transition={{ duration: 0.7 }}
             style={{ width: '100%' }}
           >
             <EnvelopeScreen onOpenComplete={handleEnvelopeOpened} />
+          </motion.div>
+        )}
+
+        {screen === 'notification' && (
+          <motion.div
+            key="screen-notification"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, filter: 'blur(4px)' }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{ width: '100%' }}
+          >
+            <NotificationScreen onDone={handleNotificationDone} />
           </motion.div>
         )}
 
@@ -79,6 +78,7 @@ export const App: React.FC = () => {
             key="screen-invitation"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             style={{ width: '100%' }}
           >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { weddingConfig } from '../config/weddingConfig';
@@ -9,41 +9,45 @@ interface EnvelopeScreenProps {
 }
 
 export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpening, setIsOpening] = useState(false);
-  const [cardEmerged, setCardEmerged] = useState(false);
+  const [phase, setPhase] = useState<'idle' | 'glowing' | 'opening' | 'open' | 'done'>('idle');
 
-  const handleEnvelopeClick = () => {
-    if (isOpening || isOpen) return;
+  const handleTap = useCallback(() => {
+    if (phase !== 'idle') return;
 
-    // 1. Disable repeated clicks
-    setIsOpening(true);
-    setIsOpen(true);
+    // Phase 1: subtle glow around envelope
+    setPhase('glowing');
 
-    // Audio SFX
-    playPaperRustle();
-
-    // 2. Step: Flap opens in 3D (0.5s)
     setTimeout(() => {
-      // 5. Reveal invitation card & slide upward
-      setCardEmerged(true);
-      playHarpChime();
+      // Phase 2: flap starts opening
+      setPhase('opening');
+      playPaperRustle();
 
-      // Confetti celebration
-      confetti({
-        particleCount: 45,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#D4AF37', '#FDFBF7', '#E7C9C6', '#C5A059'],
-        disableForReducedMotion: true,
-      });
-
-      // 8. After card rises, smoothly transition to full wedding invitation
       setTimeout(() => {
-        onOpenComplete();
-      }, 1600);
-    }, 600);
-  };
+        // Phase 3: fully open, card emerges
+        setPhase('open');
+        playHarpChime();
+
+        confetti({
+          particleCount: 50,
+          spread: 65,
+          origin: { y: 0.55 },
+          colors: ['#D4AF37', '#FFFDF9', '#EAD8C0', '#C5A059', '#F5ECE0'],
+          disableForReducedMotion: true,
+        });
+
+        // Phase 4: transition out to notification
+        setTimeout(() => {
+          setPhase('done');
+          onOpenComplete();
+        }, 1800);
+
+      }, 900);
+    }, 300);
+  }, [phase, onOpenComplete]);
+
+  const isOpening = phase === 'opening' || phase === 'open' || phase === 'done';
+  const cardUp = phase === 'open' || phase === 'done';
+  const glowing = phase === 'glowing' || isOpening;
 
   return (
     <div
@@ -54,526 +58,391 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px 16px',
         position: 'relative',
         zIndex: 10,
+        background: 'radial-gradient(ellipse at 50% 40%, #FFFDF9 0%, #F4ECDF 55%, #E9DDC8 100%)',
         overflow: 'hidden',
       }}
     >
-      {/* Surrounding ambient romantic glow */}
+      {/* Warm ambient light blob */}
       <div
-        className="ambient-glow"
         style={{
-          width: '450px',
-          height: '450px',
-          background: isOpen
-            ? 'radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, rgba(235, 210, 205, 0.25) 50%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(212, 175, 55, 0.18) 0%, rgba(235, 210, 205, 0.12) 50%, transparent 70%)',
-          transition: 'all 1s ease',
+          position: 'absolute',
+          top: '30%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '480px',
+          height: '480px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(212,175,55,0.13) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+          pointerEvents: 'none',
+          transition: 'opacity 1s ease',
+          opacity: glowing ? 1 : 0.4,
         }}
       />
 
-      {/* Screen 2 Top Title: A SPECIAL INVITATION FOR YOU */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
+      {/* Soft corner botanical SVG accents */}
+      <svg style={{ position: 'absolute', top: 0, left: 0, width: '220px', height: '220px', opacity: 0.55, pointerEvents: 'none' }} viewBox="0 0 220 220" fill="none">
+        <path d="M10 200 Q30 120 100 80 Q60 140 40 210" stroke="#C5A059" strokeWidth="1" fill="none" opacity="0.6"/>
+        <ellipse cx="100" cy="80" rx="22" ry="14" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.8" transform="rotate(-30 100 80)"/>
+        <ellipse cx="70" cy="110" rx="18" ry="11" fill="#FDF6EC" stroke="#C5A059" strokeWidth="0.8" transform="rotate(-15 70 110)"/>
+        <ellipse cx="48" cy="148" rx="16" ry="10" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.7" transform="rotate(5 48 148)"/>
+        <circle cx="99" cy="80" r="6" fill="#F4E9DC"/>
+        <circle cx="69" cy="110" r="5" fill="#F0E4D5"/>
+      </svg>
+      <svg style={{ position: 'absolute', top: 0, right: 0, width: '220px', height: '220px', opacity: 0.55, pointerEvents: 'none', transform: 'scaleX(-1)' }} viewBox="0 0 220 220" fill="none">
+        <path d="M10 200 Q30 120 100 80 Q60 140 40 210" stroke="#C5A059" strokeWidth="1" fill="none" opacity="0.6"/>
+        <ellipse cx="100" cy="80" rx="22" ry="14" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.8" transform="rotate(-30 100 80)"/>
+        <ellipse cx="70" cy="110" rx="18" ry="11" fill="#FDF6EC" stroke="#C5A059" strokeWidth="0.8" transform="rotate(-15 70 110)"/>
+        <ellipse cx="48" cy="148" rx="16" ry="10" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.7" transform="rotate(5 48 148)"/>
+        <circle cx="99" cy="80" r="6" fill="#F4E9DC"/>
+      </svg>
+      <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '200px', height: '200px', opacity: 0.5, pointerEvents: 'none', transform: 'scaleY(-1)' }} viewBox="0 0 220 220" fill="none">
+        <path d="M10 200 Q30 120 100 80 Q60 140 40 210" stroke="#C5A059" strokeWidth="1" fill="none" opacity="0.6"/>
+        <ellipse cx="100" cy="80" rx="22" ry="14" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.8" transform="rotate(-30 100 80)"/>
+        <ellipse cx="70" cy="110" rx="18" ry="11" fill="#FDF6EC" stroke="#C5A059" strokeWidth="0.8" transform="rotate(-15 70 110)"/>
+        <circle cx="99" cy="80" r="6" fill="#F4E9DC"/>
+      </svg>
+      <svg style={{ position: 'absolute', bottom: 0, right: 0, width: '200px', height: '200px', opacity: 0.5, pointerEvents: 'none', transform: 'scale(-1,-1)' }} viewBox="0 0 220 220" fill="none">
+        <path d="M10 200 Q30 120 100 80 Q60 140 40 210" stroke="#C5A059" strokeWidth="1" fill="none" opacity="0.6"/>
+        <ellipse cx="100" cy="80" rx="22" ry="14" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="0.8" transform="rotate(-30 100 80)"/>
+        <ellipse cx="70" cy="110" rx="18" ry="11" fill="#FDF6EC" stroke="#C5A059" strokeWidth="0.8" transform="rotate(-15 70 110)"/>
+      </svg>
+
+      {/* Invitation label above envelope */}
+      <motion.p
+        initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
+        transition={{ delay: 0.4, duration: 0.7 }}
         style={{
-          textAlign: 'center',
+          fontFamily: 'var(--font-heading)',
+          fontSize: '0.78rem',
+          fontWeight: 600,
+          letterSpacing: '0.3em',
+          textTransform: 'uppercase',
+          color: '#9A7B38',
           marginBottom: '28px',
           zIndex: 12,
         }}
       >
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color: 'var(--color-gold-deep)',
-            marginBottom: '6px',
-          }}
-        >
-          A Special Invitation For You
-        </p>
-        <h1
-          style={{
-            fontFamily: 'var(--font-script)',
-            fontSize: 'clamp(2rem, 5vw, 2.8rem)',
-            color: '#42362C',
-            lineHeight: 1.1,
-          }}
-        >
-          {weddingConfig.couple.groom.firstName} & {weddingConfig.couple.bride.firstName}
-        </h1>
-      </motion.div>
+        A Special Invitation For You
+      </motion.p>
 
-      {/* Botanical Floral Frame Accents (SVG White Roses & Delicate Leaves) */}
-      <div
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          THE REALISTIC CSS ENVELOPE
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <motion.div
+        onClick={handleTap}
+        initial={{ opacity: 0, y: 30, scale: 0.92 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         style={{
           position: 'relative',
-          width: '100%',
-          maxWidth: '460px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          width: 'min(92vw, 420px)',
+          cursor: phase === 'idle' || phase === 'glowing' ? 'pointer' : 'default',
+          zIndex: 12,
+          filter: glowing
+            ? 'drop-shadow(0 0 28px rgba(212,175,55,0.55)) drop-shadow(0 18px 40px rgba(60,40,20,0.25))'
+            : 'drop-shadow(0 12px 30px rgba(60,40,20,0.18))',
+          transition: 'filter 0.5s ease',
         }}
       >
-        {/* Top Left Floral Accent */}
+        {/* ── ENVELOPE BODY ── */}
         <div
-          style={{
-            position: 'absolute',
-            top: '-35px',
-            left: '-25px',
-            width: '120px',
-            height: '120px',
-            pointerEvents: 'none',
-            zIndex: 15,
-            opacity: 0.9,
-          }}
-        >
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 70C20 40 45 20 75 15C55 35 50 60 45 80" stroke="#C5A059" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
-            <path d="M40 30C35 15 20 10 10 20C15 35 30 40 40 30Z" fill="#FDFBF7" stroke="#D4AF37" strokeWidth="0.75" />
-            <path d="M60 25C65 10 80 8 88 18C82 32 68 36 60 25Z" fill="#F5EFE6" stroke="#D4AF37" strokeWidth="0.75" />
-            <circle cx="38" cy="42" r="16" fill="#FFFFFF" stroke="#EAD8C0" strokeWidth="1.5" />
-            <circle cx="38" cy="42" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="0.75" />
-            <circle cx="38" cy="42" r="6" fill="#F4E9DC" />
-            {/* Rose petal lines */}
-            <path d="M32 38C35 34 42 34 45 38" stroke="#C5A059" strokeWidth="0.7" strokeLinecap="round" />
-            <path d="M34 44C37 47 43 46 45 43" stroke="#C5A059" strokeWidth="0.7" strokeLinecap="round" />
-          </svg>
-        </div>
-
-        {/* Bottom Right Floral Accent */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-35px',
-            right: '-25px',
-            width: '125px',
-            height: '125px',
-            pointerEvents: 'none',
-            zIndex: 15,
-            opacity: 0.9,
-            transform: 'rotate(180deg)',
-          }}
-        >
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 70C20 40 45 20 75 15C55 35 50 60 45 80" stroke="#C5A059" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
-            <path d="M40 30C35 15 20 10 10 20C15 35 30 40 40 30Z" fill="#FDFBF7" stroke="#D4AF37" strokeWidth="0.75" />
-            <path d="M60 25C65 10 80 8 88 18C82 32 68 36 60 25Z" fill="#F5EFE6" stroke="#D4AF37" strokeWidth="0.75" />
-            <circle cx="38" cy="42" r="16" fill="#FFFFFF" stroke="#EAD8C0" strokeWidth="1.5" />
-            <circle cx="38" cy="42" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="0.75" />
-            <circle cx="38" cy="42" r="6" fill="#F4E9DC" />
-            <path d="M32 38C35 34 42 34 45 38" stroke="#C5A059" strokeWidth="0.7" strokeLinecap="round" />
-          </svg>
-        </div>
-
-        {/* 3D Envelope Container */}
-        <div
-          className="envelope-perspective-wrapper"
-          onClick={handleEnvelopeClick}
-          id="wedding-envelope"
           style={{
             position: 'relative',
             width: '100%',
-            maxWidth: '380px',
-            height: '255px',
-            cursor: isOpening ? 'default' : 'pointer',
-            transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            paddingBottom: '66%',      // aspect ratio ~3:2
+            borderRadius: '6px',
+            overflow: 'visible',
           }}
         >
-          {/* Envelope Glow when clicked */}
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1.05 }}
-              transition={{ duration: 0.8 }}
-              style={{
-                position: 'absolute',
-                inset: '-12px',
-                borderRadius: '20px',
-                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.45) 0%, rgba(237, 210, 205, 0.2) 60%, transparent 80%)',
-                filter: 'blur(10px)',
-                zIndex: 1,
-              }}
-            />
-          )}
-
-          {/* 1. Envelope Back Interior Panel */}
-          <div
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#F3ECE0',
-              borderRadius: '12px',
-              boxShadow: 'var(--shadow-envelope)',
-              border: '1px solid rgba(212, 175, 55, 0.4)',
-              overflow: 'hidden',
-              zIndex: 2,
-            }}
-          >
-            {/* Elegant luxury lining pattern inside envelope */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'radial-gradient(circle at center, #FFFDF8 0%, #EFE5D5 100%)',
-                opacity: 0.9,
-              }}
-            />
-            {/* Gold foil interior border */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: '8px',
-                border: '1px dashed rgba(212, 175, 55, 0.4)',
-                borderRadius: '8px',
-              }}
-            />
-          </div>
-
-          {/* 2. INVITATION CARD (Tucked inside, then smoothly emerges) */}
-          <motion.div
-            initial={{ y: 0, scale: 0.95, opacity: 0.9 }}
-            animate={
-              cardEmerged
-                ? {
-                    y: -130,
-                    scale: 1.02,
-                    opacity: 1,
-                    boxShadow: '0 30px 60px rgba(50, 40, 30, 0.28), 0 0 30px rgba(212, 175, 55, 0.35)',
-                  }
-                : { y: 0, scale: 0.95, opacity: 0.9 }
-            }
-            transition={{
-              duration: 1.1,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            style={{
-              position: 'absolute',
-              top: '12px',
-              left: '16px',
-              right: '16px',
-              height: '235px',
-              backgroundColor: '#FFFDF9',
-              borderRadius: '10px',
-              border: '1px solid rgba(212, 175, 55, 0.5)',
-              padding: '16px 20px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: cardEmerged ? 8 : 3,
-              boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-            }}
-          >
-            {/* Inner Gold Foil Frame */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: '6px',
-                border: '1px solid rgba(212, 175, 55, 0.35)',
-                borderRadius: '6px',
-                pointerEvents: 'none',
-              }}
-            />
-
-            {/* Monogram on Card */}
-            <p
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.85rem',
-                letterSpacing: '0.3em',
-                color: 'var(--color-gold-deep)',
-                marginBottom: '4px',
-              }}
-            >
-              {weddingConfig.couple.monogram}
-            </p>
-
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.65rem',
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                color: '#8A7B6E',
-                marginBottom: '4px',
-              }}
-            >
-              SAVE THE DATE
-            </p>
-
-            <h2
-              style={{
-                fontFamily: 'var(--font-script)',
-                fontSize: '1.9rem',
-                color: '#382D25',
-                lineHeight: 1.1,
-                marginBottom: '4px',
-              }}
-            >
-              {weddingConfig.couple.groom.firstName} & {weddingConfig.couple.bride.firstName}
-            </h2>
-
-            <p
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.78rem',
-                letterSpacing: '0.18em',
-                color: 'var(--color-gold-primary)',
-                fontWeight: 600,
-              }}
-            >
-              {weddingConfig.schedule.displayDate}
-            </p>
-            <p
-              style={{
-                fontFamily: 'var(--font-serif-luxury)',
-                fontSize: '0.8rem',
-                color: '#7A6E64',
-                fontStyle: 'italic',
-                marginTop: '4px',
-              }}
-            >
-              {weddingConfig.venue.name}
-            </p>
-          </motion.div>
-
-          {/* 3. Envelope Front Pocket (Left, Right, and Bottom Flaps) */}
+          {/* Back panel — gives the envelope depth */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
-              zIndex: 4,
-              pointerEvents: 'none',
-              borderRadius: '12px',
+              borderRadius: '6px',
+              background: 'linear-gradient(160deg, #F8F3E8 0%, #EDE3D0 100%)',
+              border: '1px solid rgba(197,160,89,0.45)',
+              boxShadow: '0 8px 32px rgba(60,40,20,0.14), inset 0 1px 0 rgba(255,255,255,0.8)',
+            }}
+          />
+
+          {/* ── INVITATION CARD (inside, slides up on open) ── */}
+          <motion.div
+            animate={
+              cardUp
+                ? { y: '-115%', zIndex: 8, boxShadow: '0 30px 60px rgba(50,35,20,0.3), 0 0 25px rgba(212,175,55,0.3)' }
+                : { y: '-6%', zIndex: 2, boxShadow: '0 4px 16px rgba(50,35,20,0.12)' }
+            }
+            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: 'absolute',
+              top: '14%',
+              left: '8%',
+              right: '8%',
+              height: '82%',
+              borderRadius: '4px',
+              background: 'linear-gradient(170deg, #FFFDF9 0%, #FDF7EE 100%)',
+              border: '1px solid rgba(212,175,55,0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '14px 18px',
+              textAlign: 'center',
               overflow: 'hidden',
             }}
           >
-            {/* Left triangle flap */}
+            {/* Inner gold foil double border */}
+            <div style={{ position: 'absolute', inset: '5px', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '2px', pointerEvents: 'none' }} />
+
+            {/* Couple photo on card */}
             <div
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                bottom: 0,
-                width: 0,
-                height: 0,
-                borderStyle: 'solid',
-                borderWidth: '127.5px 0 127.5px 190px',
-                borderColor: 'transparent transparent transparent #F6EFE3',
-                filter: 'drop-shadow(2px 0 6px rgba(70, 50, 30, 0.08))',
-              }}
-            />
-
-            {/* Right triangle flap */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                width: 0,
-                height: 0,
-                borderStyle: 'solid',
-                borderWidth: '127.5px 190px 127.5px 0',
-                borderColor: 'transparent #F6EFE3 transparent transparent',
-                filter: 'drop-shadow(-2px 0 6px rgba(70, 50, 30, 0.08))',
-              }}
-            />
-
-            {/* Bottom triangle pocket */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                width: 0,
-                height: 0,
-                borderStyle: 'solid',
-                borderWidth: '0 190px 135px 190px',
-                borderColor: 'transparent transparent #FAF5EC transparent',
-                filter: 'drop-shadow(0 -3px 8px rgba(70, 50, 30, 0.12))',
-              }}
-            />
-
-            {/* Subtle Gold Pocket Trim */}
-            <svg
-              viewBox="0 0 380 255"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
+                width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden',
+                border: '2px solid #D4AF37', boxShadow: '0 3px 10px rgba(212,175,55,0.3)',
+                marginBottom: '7px', flexShrink: 0,
               }}
             >
-              <path
-                d="M0 255 L190 120 L380 255"
-                fill="none"
-                stroke="#D4AF37"
-                strokeWidth="0.8"
-                opacity="0.5"
+              <img
+                src={weddingConfig.couplePhotoUrl}
+                alt="The Couple"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
               />
-            </svg>
-          </div>
+            </div>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8A7060', marginBottom: '3px' }}>
+              SAVE THE DATE
+            </p>
+            <h3 style={{ fontFamily: 'var(--font-script)', fontSize: '1.5rem', color: '#3A2C22', lineHeight: 1.1, marginBottom: '4px' }}>
+              {weddingConfig.couple.groom.firstName} &amp; {weddingConfig.couple.bride.firstName}
+            </h3>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.7rem', letterSpacing: '0.15em', color: '#C5A059', fontWeight: 600 }}>
+              {weddingConfig.schedule.displayDate}
+            </p>
+          </motion.div>
 
-          {/* 4. Top Flap with 3D Rotate Effect (transform-origin: top center) */}
+          {/* ── ENVELOPE FRONT FACE GEOMETRY ── */}
+          {/* Left triangle flap */}
+          <svg
+            style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', pointerEvents: 'none', zIndex: 4 }}
+            viewBox="0 0 210 280" preserveAspectRatio="none"
+          >
+            <polygon points="0,0 0,280 210,140" fill="#F5ECD8" />
+            <polygon points="0,0 0,280 210,140" fill="none" stroke="#C5A059" strokeWidth="0.7" opacity="0.5" />
+          </svg>
+          {/* Right triangle flap */}
+          <svg
+            style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', pointerEvents: 'none', zIndex: 4 }}
+            viewBox="0 0 210 280" preserveAspectRatio="none"
+          >
+            <polygon points="210,0 210,280 0,140" fill="#F0E4CC" />
+            <polygon points="210,0 210,280 0,140" fill="none" stroke="#C5A059" strokeWidth="0.7" opacity="0.5" />
+          </svg>
+          {/* Bottom triangle flap */}
+          <svg
+            style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '55%', pointerEvents: 'none', zIndex: 5 }}
+            viewBox="0 0 420 185" preserveAspectRatio="none"
+          >
+            <polygon points="0,185 420,185 210,0" fill="#F8F2E4" />
+            <polygon points="0,185 420,185 210,0" fill="none" stroke="#C5A059" strokeWidth="0.8" opacity="0.55" />
+          </svg>
+
+          {/* ── TOP FLAP — 3D realistic CSS rotate ── */}
           <motion.div
-            initial={false}
-            animate={{
-              rotateX: isOpen ? 180 : 0,
-              zIndex: isOpen ? 1 : 6,
-            }}
-            transition={{
-              duration: 0.85,
-              ease: [0.4, 0.0, 0.2, 1],
-            }}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
-              right: 0,
-              height: '135px',
+              width: '100%',
+              height: '55%',         /* The flap covers upper 55% */
               transformOrigin: 'top center',
               transformStyle: 'preserve-3d',
-              pointerEvents: isOpen ? 'none' : 'auto',
+              zIndex: isOpening ? 1 : 7,
+              perspective: '900px',
             }}
+            animate={{
+              rotateX: isOpening ? 185 : 0,   /* Flips back and over */
+            }}
+            transition={{ duration: 0.9, ease: [0.4, 0.0, 0.2, 1] }}
           >
-            {/* Front of Top Flap (Ivory Paper Triangle pointing down) */}
-            <div
+            {/* Front face of flap — ivory triangle pointing down */}
+            <svg
+              viewBox="0 0 420 231"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0,
-                borderStyle: 'solid',
-                borderWidth: '135px 190px 0 190px',
-                borderColor: '#F9F4EB transparent transparent transparent',
-                filter: 'drop-shadow(0 4px 8px rgba(50, 35, 20, 0.18))',
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
               }}
             >
-              {/* Gold border accent on top flap */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '-135px',
-                  left: '-190px',
-                  width: '380px',
-                  height: '135px',
-                  pointerEvents: 'none',
-                }}
-              >
-                <svg viewBox="0 0 380 135" style={{ width: '100%', height: '100%' }}>
-                  <path
-                    d="M0 0 L190 133 L380 0"
-                    fill="none"
-                    stroke="#D4AF37"
-                    strokeWidth="1.2"
-                    opacity="0.65"
-                  />
-                </svg>
-              </div>
-            </div>
+              {/* Paper shadow gradient for depth */}
+              <defs>
+                <linearGradient id="flapGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FFFDF8" />
+                  <stop offset="100%" stopColor="#EEE4D0" />
+                </linearGradient>
+                <linearGradient id="flapEdge" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(197,160,89,0.6)" />
+                  <stop offset="100%" stopColor="rgba(197,160,89,0.2)" />
+                </linearGradient>
+              </defs>
+              <polygon points="0,0 420,0 210,231" fill="url(#flapGrad)" />
+              <polygon points="0,0 420,0 210,231" fill="none" stroke="url(#flapEdge)" strokeWidth="1" />
+              {/* Subtle texture lines to make paper feel realistic */}
+              <line x1="100" y1="30" x2="160" y2="110" stroke="rgba(197,160,89,0.08)" strokeWidth="0.8" />
+              <line x1="320" y1="30" x2="260" y2="110" stroke="rgba(197,160,89,0.08)" strokeWidth="0.8" />
+            </svg>
 
-            {/* Back of Top Flap (Champagne/Gold interior visible when flap opens 180deg) */}
-            <div
+            {/* Back face of flap (shown when open = champagne interior lining) */}
+            <svg
+              viewBox="0 0 420 231"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0,
-                borderStyle: 'solid',
-                borderWidth: '135px 190px 0 190px',
-                borderColor: '#EFE5D5 transparent transparent transparent',
-                transform: 'rotateY(180deg) rotateZ(180deg)',
-                transformOrigin: '50% 50%',
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
-                filter: 'drop-shadow(0 -4px 8px rgba(50, 35, 20, 0.1))',
+                transform: 'rotateX(180deg)',
               }}
-            />
+            >
+              <defs>
+                <linearGradient id="innerGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#EFE3CA" />
+                  <stop offset="100%" stopColor="#F7EDD8" />
+                </linearGradient>
+              </defs>
+              <polygon points="0,0 420,0 210,231" fill="url(#innerGrad)" />
+            </svg>
 
-            {/* Wax Seal placed at the apex of the top flap */}
+            {/* ── WAX SEAL — sits at the flap apex (bottom of flap svg = center of envelope) ── */}
             <AnimatePresence>
-              {!isOpen && (
+              {!isOpening && (
                 <motion.div
-                  initial={{ scale: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ scale: 0.5, opacity: 0, transition: { duration: 0.3 } }}
                   style={{
                     position: 'absolute',
-                    top: '105px',
+                    bottom: '-28px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    zIndex: 10,
+                    zIndex: 20,
+                    width: '58px',
+                    height: '58px',
                   }}
                 >
-                  <div className="wax-seal">
-                    <div className="wax-seal-inner">
-                      <span>{weddingConfig.couple.monogram}</span>
-                    </div>
-                  </div>
+                  <WaxSeal monogram={weddingConfig.couple.monogram} />
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Screen 2 Bottom Instruction: Tap the envelope to open 💌 */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-        style={{
-          marginTop: '32px',
-          textAlign: 'center',
-          zIndex: 12,
-        }}
-      >
-        <motion.div
-          animate={
-            isOpen
-              ? { scale: 0.9, opacity: 0 }
-              : { scale: [1, 1.05, 1], opacity: 1 }
-          }
-          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-          className="glass-pill"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 22px',
-            borderRadius: '999px',
-            cursor: 'pointer',
-          }}
-          onClick={handleEnvelopeClick}
-        >
-          <span
+      {/* ── TAP PROMPT ── */}
+      <AnimatePresence>
+        {(phase === 'idle' || phase === 'glowing') && (
+          <motion.div
+            key="tap-hint"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: [0, -5, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ y: { repeat: Infinity, duration: 2.2, ease: 'easeInOut' }, opacity: { duration: 0.5, delay: 0.5 } }}
+            onClick={handleTap}
             style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.82rem',
-              fontWeight: 500,
-              letterSpacing: '0.12em',
-              color: '#5C4E3E',
+              marginTop: '36px',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              zIndex: 12,
             }}
           >
-            {isOpening ? 'Opening Invitation...' : 'Tap the envelope to open 💌'}
-          </span>
-        </motion.div>
-      </motion.div>
+            {/* Animated chevron down arrows */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
+                >
+                  <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
+                    <path d="M1 1L10 10L19 1" stroke="#C5A059" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </motion.div>
+              ))}
+            </div>
+            <span style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.78rem',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: '#8A7060',
+              fontWeight: 500,
+            }}>
+              Tap to open
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Opening status message */}
+      <AnimatePresence>
+        {isOpening && !cardUp && (
+          <motion.p
+            key="opening-msg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              marginTop: '28px',
+              fontFamily: 'var(--font-serif-luxury)',
+              fontSize: '1rem',
+              fontStyle: 'italic',
+              color: '#8A7060',
+              zIndex: 12,
+            }}
+          >
+            Opening...
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+
+/* ── Wax Seal SVG Component ── */
+const WaxSeal: React.FC<{ monogram: string }> = ({ monogram }) => (
+  <svg viewBox="0 0 58 58" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="sealGrad" cx="38%" cy="35%" r="65%">
+        <stop offset="0%" stopColor="#E8C870" />
+        <stop offset="45%" stopColor="#C5A050" />
+        <stop offset="100%" stopColor="#8C6820" />
+      </radialGradient>
+      <filter id="sealShadow">
+        <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="rgba(0,0,0,0.35)" />
+      </filter>
+    </defs>
+    {/* Outer wax blob — slightly organic shape */}
+    <ellipse cx="29" cy="30" rx="27" ry="26" fill="url(#sealGrad)" filter="url(#sealShadow)" />
+    {/* Inner circle ring */}
+    <circle cx="29" cy="29" r="20" fill="none" stroke="rgba(255,245,210,0.35)" strokeWidth="1.2" strokeDasharray="3 2" />
+    {/* Highlight */}
+    <ellipse cx="22" cy="21" rx="8" ry="5" fill="rgba(255,250,230,0.3)" transform="rotate(-20 22 21)" />
+    {/* Monogram text */}
+    <text
+      x="50%"
+      y="54%"
+      dominantBaseline="middle"
+      textAnchor="middle"
+      fontFamily="Cinzel, serif"
+      fontSize="11"
+      fontWeight="700"
+      fill="#3A2808"
+      opacity="0.85"
+      letterSpacing="1"
+    >
+      {monogram}
+    </text>
+  </svg>
+);

@@ -77,9 +77,9 @@ export const InvitationContent: React.FC = () => {
     const title = encodeURIComponent(`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}'s Wedding`);
     const details = encodeURIComponent(weddingConfig.couple.welcomeMessage);
     const location = encodeURIComponent(`${weddingConfig.venue.name}, ${weddingConfig.venue.streetAddress}, ${weddingConfig.venue.cityStateZip}`);
-    // 20260825T130000Z format approx
-    const startTime = "20260825T130000Z";
-    const endTime = "20260825T183000Z";
+    // 20260917T130000Z format for September 17 2026
+    const startTime = "20260917T130000Z";
+    const endTime = "20260917T183000Z";
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}`;
   };
 
@@ -105,6 +105,20 @@ export const InvitationContent: React.FC = () => {
   };
 
   return (
+    <div
+      style={{
+        minHeight: '100vh',
+        width: '100%',
+        backgroundImage: 'url(/assets/details_bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundAttachment: 'scroll',
+        position: 'relative',
+      }}
+    >
+      {/* Warm paper overlay */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(253, 251, 247, 0.35)', pointerEvents: 'none' }} />
+
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -124,37 +138,65 @@ export const InvitationContent: React.FC = () => {
         className="glass-panel border-gold-double"
         style={{
           borderRadius: '24px',
-          padding: '48px 24px',
+          padding: '0 0 44px 0',
           textAlign: 'center',
           marginBottom: '32px',
           boxShadow: 'var(--shadow-luxury)',
           position: 'relative',
           overflow: 'hidden',
-          background: 'linear-gradient(180deg, rgba(255, 253, 249, 0.95) 0%, rgba(250, 244, 235, 0.9) 100%)',
+          background: 'linear-gradient(180deg, #FFFDF9 0%, rgba(250, 244, 235, 0.9) 100%)',
         }}
       >
-        {/* Monogram crest */}
-        <div style={{ marginBottom: '20px' }}>
+        {/* Full-width Cinematic Hero Banner with Couple Photo */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(260px, 45vh, 360px)',
+            overflow: 'hidden',
+          }}
+        >
+          <img
+            src={weddingConfig.couplePhotoUrl}
+            alt={`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}`}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center 25%',
+            }}
+          />
+          {/* Smooth Gradient Overlay fading from transparent top to card background at bottom */}
           <div
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '68px',
-              height: '68px',
-              borderRadius: '50%',
+              position: 'absolute',
+              inset: 0,
+              background:
+                'linear-gradient(to bottom, rgba(30, 20, 10, 0.25) 0%, rgba(255, 253, 249, 0.0) 40%, rgba(255, 253, 249, 0.75) 75%, #FFFDF9 100%)',
+            }}
+          />
+
+          {/* Floating Monogram Badge over top-right of image */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              padding: '6px 14px',
+              background: 'rgba(255, 253, 249, 0.85)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '999px',
               border: '1px solid rgba(212, 175, 55, 0.5)',
-              background: 'radial-gradient(circle, #FFFDF8 0%, #F5EFEB 100%)',
-              boxShadow: '0 4px 15px rgba(212, 175, 55, 0.15)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
             }}
           >
             <span
               style={{
                 fontFamily: 'var(--font-heading)',
-                fontSize: '1.25rem',
+                fontSize: '0.78rem',
                 fontWeight: 600,
                 color: 'var(--color-gold-deep)',
-                letterSpacing: '0.15em',
+                letterSpacing: '0.18em',
               }}
             >
               {weddingConfig.couple.monogram}
@@ -162,19 +204,23 @@ export const InvitationContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Small Intro Tag */}
-        <p
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '0.75rem',
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color: 'var(--color-gold-deep)',
-            marginBottom: '18px',
-          }}
-        >
-          THE WEDDING CELEBRATION OF
-        </p>
+        {/* Content Container below Hero Photo */}
+        <div style={{ padding: '0 24px' }}>
+          {/* Small Intro Tag */}
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.28em',
+              textTransform: 'uppercase',
+              color: 'var(--color-gold-deep)',
+              marginBottom: '14px',
+              marginTop: '8px',
+            }}
+          >
+            THE WEDDING CELEBRATION OF
+          </p>
+
 
         {/* Screen 3 Large text: GROOM NAME & BRIDE NAME */}
         <h1
@@ -259,6 +305,7 @@ export const InvitationContent: React.FC = () => {
         >
           <p>{weddingConfig.couple.groom.parents}</p>
           <p style={{ marginTop: '4px' }}>{weddingConfig.couple.bride.parents}</p>
+        </div>
         </div>
       </motion.section>
 
@@ -801,5 +848,6 @@ export const InvitationContent: React.FC = () => {
         </p>
       </motion.footer>
     </motion.div>
+    </div>
   );
 };

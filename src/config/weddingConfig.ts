@@ -1,3 +1,7 @@
+export interface WeddingConfig {
+  couplePhotoUrl: string;
+}
+
 export interface WeddingEvent {
   time: string;
   title: string;
@@ -70,7 +74,8 @@ export interface WeddingConfig {
   };
 }
 
-export const weddingConfig: WeddingConfig = {
+export const weddingConfig = {
+  couplePhotoUrl: '/assets/couple.png',
   couple: {
     groom: {
       firstName: "Alexander",
@@ -89,9 +94,9 @@ export const weddingConfig: WeddingConfig = {
       "Together with our families, we joyfully invite you to celebrate the beginning of our forever.",
   },
   schedule: {
-    isoDate: "2026-08-25T18:30:00+05:30",
-    displayDate: "25 AUGUST 2026",
-    dayOfWeek: "Tuesday",
+    isoDate: "2026-09-17T18:30:00+05:30",
+    displayDate: "17 SEPTEMBER 2026",
+    dayOfWeek: "Thursday",
     time: "6:30 PM",
     timezone: "IST / Local Time",
     events: [

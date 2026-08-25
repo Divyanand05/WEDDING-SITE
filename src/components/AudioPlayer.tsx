@@ -97,7 +97,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying, onToggle })
   }, [isPlaying, hasAudioUrl]);
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex items-center">
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 999,
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       {hasAudioUrl && (
         <audio
           ref={audioRef}
@@ -109,30 +118,54 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying, onToggle })
       <button
         onClick={onToggle}
         aria-label={isPlaying ? "Mute music" : "Play music"}
-        className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-md border border-[#D4AF37]/40 shadow-lg text-[#6B5A3E] transition-all duration-300 hover:scale-105 active:scale-95"
         style={{
-          boxShadow: isPlaying ? '0 0 15px rgba(212, 175, 55, 0.35)' : '0 4px 12px rgba(0,0,0,0.08)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 18px',
+          borderRadius: '999px',
+          background: 'rgba(255, 253, 249, 0.9)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(212, 175, 55, 0.5)',
+          color: '#5C4E3E',
+          cursor: 'pointer',
+          boxShadow: isPlaying
+            ? '0 6px 20px rgba(212, 175, 55, 0.4), 0 0 12px rgba(212, 175, 55, 0.2)'
+            : '0 4px 14px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease',
+          fontSize: '0.75rem',
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
         }}
       >
         {isPlaying ? (
           <>
-            <div className="relative">
-              <Volume2 className="w-4 h-4 text-[#C5A059] animate-pulse" />
-              <Sparkles className="w-2.5 h-2.5 text-[#D4AF37] absolute -top-1.5 -right-1.5 animate-spin" style={{ animationDuration: '6s' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Volume2 style={{ width: '16px', height: '16px', color: '#C5A059' }} />
+              <Sparkles
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  color: '#D4AF37',
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-6px',
+                }}
+              />
             </div>
-            <span className="text-[11px] font-medium tracking-wider uppercase hidden sm:inline text-[#6B5A3E]">
-              Music Playing
-            </span>
+            <span>Music Playing</span>
           </>
         ) : (
           <>
-            <VolumeX className="w-4 h-4 text-stone-400" />
-            <span className="text-[11px] font-medium tracking-wider uppercase hidden sm:inline text-stone-500">
-              Music Off
-            </span>
+            <VolumeX style={{ width: '16px', height: '16px', color: '#9B9189' }} />
+            <span style={{ color: '#8A7C72' }}>Music Off</span>
           </>
         )}
       </button>
     </div>
   );
 };
+
