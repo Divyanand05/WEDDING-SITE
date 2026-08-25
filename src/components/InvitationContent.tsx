@@ -271,16 +271,17 @@ export const InvitationContent: React.FC = () => {
           backgroundAttachment: 'scroll',
         }}
       >
-        {/* Dark Warm Mahogany / Chocolate Overlay matching Screenshot 2 */}
+        {/* Dark Warm Mahogany Overlay — subtle so background photo is beautifully visible */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background:
-              'radial-gradient(ellipse at center, rgba(30, 15, 10, 0.65) 0%, rgba(20, 10, 5, 0.82) 100%)',
+              'linear-gradient(180deg, rgba(20, 10, 5, 0.48) 0%, rgba(30, 15, 10, 0.42) 50%, rgba(18, 8, 4, 0.75) 100%)',
             pointerEvents: 'none',
           }}
         />
+
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}

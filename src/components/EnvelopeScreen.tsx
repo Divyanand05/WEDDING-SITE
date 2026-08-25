@@ -69,14 +69,26 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
         justifyContent: 'center',
         position: 'relative',
         zIndex: 10,
-        background: candleLit
-          ? 'radial-gradient(ellipse at 50% 40%, #FFF9EE 0%, #F5ECE0 55%, #E9DAC5 100%)'
-          : 'radial-gradient(ellipse at 50% 40%, #FFFDF9 0%, #F4ECDF 55%, #E9DDC8 100%)',
-        transition: 'background 1.2s ease',
+        backgroundImage: `url(${weddingConfig.couplePhotoUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
         overflow: 'hidden',
         padding: '24px 16px',
       }}
     >
+      {/* Warm rich mahogany translucent overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: candleLit
+            ? 'linear-gradient(180deg, rgba(35, 20, 12, 0.6) 0%, rgba(25, 12, 6, 0.72) 100%)'
+            : 'linear-gradient(180deg, rgba(30, 18, 10, 0.68) 0%, rgba(20, 10, 5, 0.78) 100%)',
+          transition: 'background 1.2s ease',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* Warm ambient flame glow when candle is lit */}
       <div
         style={{
@@ -122,8 +134,9 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                 fontWeight: 600,
                 letterSpacing: '0.3em',
                 textTransform: 'uppercase',
-                color: '#9A7B38',
+                color: '#D4AF37',
                 marginBottom: '8px',
+                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
               }}
             >
               STEP 1 OF 3
@@ -132,12 +145,14 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
               style={{
                 fontFamily: 'var(--font-serif-luxury)',
                 fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                color: '#382B22',
+                color: '#FFFDF9',
                 marginBottom: '28px',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
               }}
             >
               Tap the Ring to Begin
             </h2>
+
 
             {/* Interactive Wedding Ring Container */}
             <motion.div
@@ -218,8 +233,9 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                 fontWeight: 600,
                 letterSpacing: '0.3em',
                 textTransform: 'uppercase',
-                color: '#9A7B38',
+                color: '#D4AF37',
                 marginBottom: '8px',
+                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
               }}
             >
               STEP 2 OF 3
@@ -228,12 +244,14 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
               style={{
                 fontFamily: 'var(--font-serif-luxury)',
                 fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                color: '#382B22',
+                color: '#FFFDF9',
                 marginBottom: '28px',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
               }}
             >
               Light the Flame to Celebrate
             </h2>
+
 
             {/* Interactive Candle / Diya Stand */}
             <motion.div
@@ -357,8 +375,9 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                 fontWeight: 600,
                 letterSpacing: '0.3em',
                 textTransform: 'uppercase',
-                color: '#9A7B38',
+                color: '#D4AF37',
                 marginBottom: '8px',
+                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
               }}
             >
               STEP 3 OF 3
@@ -367,12 +386,14 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
               style={{
                 fontFamily: 'var(--font-serif-luxury)',
                 fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                color: '#382B22',
+                color: '#FFFDF9',
                 marginBottom: '24px',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
               }}
             >
               Tap the Wax Seal to Break It
             </h2>
+
 
             {/* REALISTIC 3D CSS ENVELOPE WITH INTERACTIVE WAX SEAL */}
             <div
