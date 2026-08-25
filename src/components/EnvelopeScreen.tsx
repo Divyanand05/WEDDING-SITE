@@ -199,20 +199,27 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
             {/* Inner gold foil double border */}
             <div style={{ position: 'absolute', inset: '5px', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '2px', pointerEvents: 'none' }} />
 
-            {/* Couple photo on card */}
+            {/* Couple photo on card (uncropped portrait) */}
             <div
               style={{
-                width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden',
-                border: '2px solid #D4AF37', boxShadow: '0 3px 10px rgba(212,175,55,0.3)',
-                marginBottom: '7px', flexShrink: 0,
+                width: '75px',
+                height: '95px',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                border: '1.5px solid #D4AF37',
+                boxShadow: '0 3px 10px rgba(212,175,55,0.3)',
+                marginBottom: '6px',
+                flexShrink: 0,
+                background: '#FFFDF9',
               }}
             >
               <img
                 src={weddingConfig.couplePhotoUrl}
                 alt="The Couple"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
+
             <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8A7060', marginBottom: '3px' }}>
               SAVE THE DATE
             </p>

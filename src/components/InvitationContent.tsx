@@ -147,65 +147,77 @@ export const InvitationContent: React.FC = () => {
           background: 'linear-gradient(180deg, #FFFDF9 0%, rgba(250, 244, 235, 0.9) 100%)',
         }}
       >
-        {/* Full-width Cinematic Hero Banner with Couple Photo */}
+        {/* Full Uncropped Portrait Frame with Couple Photo */}
         <div
           style={{
-            position: 'relative',
-            width: '100%',
-            height: 'clamp(260px, 45vh, 360px)',
-            overflow: 'hidden',
+            padding: '36px 20px 12px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <img
-            src={weddingConfig.couplePhotoUrl}
-            alt={`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}`}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center 25%',
-            }}
-          />
-          {/* Smooth Gradient Overlay fading from transparent top to card background at bottom */}
+          {/* Monogram Badge */}
           <div
             style={{
-              position: 'absolute',
-              inset: 0,
-              background:
-                'linear-gradient(to bottom, rgba(30, 20, 10, 0.25) 0%, rgba(255, 253, 249, 0.0) 40%, rgba(255, 253, 249, 0.75) 75%, #FFFDF9 100%)',
-            }}
-          />
-
-          {/* Floating Monogram Badge over top-right of image */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              padding: '6px 14px',
-              background: 'rgba(255, 253, 249, 0.85)',
-              backdropFilter: 'blur(8px)',
+              padding: '6px 18px',
+              background: 'rgba(255, 253, 249, 0.9)',
               borderRadius: '999px',
               border: '1px solid rgba(212, 175, 55, 0.5)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 4px 15px rgba(212, 175, 55, 0.15)',
+              marginBottom: '20px',
             }}
           >
             <span
               style={{
                 fontFamily: 'var(--font-heading)',
-                fontSize: '0.78rem',
+                fontSize: '0.82rem',
                 fontWeight: 600,
                 color: 'var(--color-gold-deep)',
-                letterSpacing: '0.18em',
+                letterSpacing: '0.2em',
               }}
             >
               {weddingConfig.couple.monogram}
             </span>
           </div>
+
+          {/* Golden Portrait Frame displaying the WHOLE uncropped photo */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '360px',
+              borderRadius: '20px',
+              padding: '8px',
+              background: 'linear-gradient(135deg, #ECC880 0%, #D4AF37 50%, #AA7C11 100%)',
+              boxShadow: '0 16px 40px rgba(60, 40, 20, 0.22), 0 0 25px rgba(212, 175, 55, 0.3)',
+              marginBottom: '24px',
+            }}
+          >
+            <div
+              style={{
+                borderRadius: '14px',
+                overflow: 'hidden',
+                background: '#FFFDF9',
+                border: '1px solid rgba(255, 255, 255, 0.8)',
+              }}
+            >
+              <img
+                src={weddingConfig.couplePhotoUrl}
+                alt={`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}`}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block',
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Content Container below Hero Photo */}
         <div style={{ padding: '0 24px' }}>
+
           {/* Small Intro Tag */}
           <p
             style={{

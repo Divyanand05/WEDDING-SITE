@@ -70,46 +70,45 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({ onDone }
             border: '1px solid rgba(212,175,55,0.22)', borderRadius: '21px', pointerEvents: 'none',
           }} />
 
-          {/* Couple photo — circular at top */}
+          {/* Couple photo — Full Uncropped Portrait Frame */}
           <motion.div
-            initial={{ scale: 0.6, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{
               margin: '0 auto 20px',
               position: 'relative',
               display: 'inline-block',
+              maxWidth: '240px',
+              width: '100%',
             }}
           >
-            {/* Spinning gold conic ring */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+            {/* Outer gold border glow */}
+            <div
               style={{
-                position: 'absolute',
-                inset: '-5px',
-                borderRadius: '50%',
-                background: 'conic-gradient(from 0deg, #D4AF37 0%, #F3E5AB 30%, #C5A059 60%, #ECC880 85%, #D4AF37 100%)',
-                filter: 'blur(2px)',
-                opacity: 0.75,
+                position: 'relative',
+                width: '100%',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '2px solid #D4AF37',
+                boxShadow: '0 10px 30px rgba(60, 40, 20, 0.2), 0 0 20px rgba(212, 175, 55, 0.25)',
+                background: '#FFFDF9',
               }}
-            />
-            <div style={{
-              position: 'relative',
-              width: '120px',
-              height: '120px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '3px solid #D4AF37',
-              boxShadow: '0 6px 22px rgba(212,175,55,0.35)',
-            }}>
+            >
               <img
                 src={weddingConfig.couplePhotoUrl}
                 alt="The Couple"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '320px',
+                  display: 'block',
+                  objectFit: 'contain',
+                }}
               />
             </div>
           </motion.div>
+
 
           {/* NEW MESSAGE badge */}
           <motion.div
