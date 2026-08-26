@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
@@ -117,9 +117,9 @@ export const InvitationContent: React.FC = () => {
         overflowX: 'hidden',
       }}
     >
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           1. NAVIGATION HEADER (Matching Screenshot 2)
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <header
         style={{
           position: 'fixed',
@@ -239,9 +239,9 @@ export const InvitationContent: React.FC = () => {
         )}
       </header>
 
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           2. HERO HERO BANNER (Matching Screenshot 2 EXACTLY)
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <section
         id="home"
         style={{
@@ -260,7 +260,7 @@ export const InvitationContent: React.FC = () => {
           backgroundAttachment: 'scroll',
         }}
       >
-        {/* Dark Warm Mahogany Overlay -€” subtle so background photo is beautifully visible */}
+        {/* Dark Warm Mahogany Overlay - subtle so background photo is beautifully visible */}
         <div
           style={{
             position: 'absolute',
@@ -371,7 +371,7 @@ export const InvitationContent: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              VIEW SCHEDULE ↓
+              VIEW SCHEDULE
             </button>
 
             {/* SHARE INVITATION  */}
@@ -404,9 +404,9 @@ export const InvitationContent: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           3. MOMENTS SECTION (Matching Screenshot 1 EXACTLY)
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <section
         id="moments"
         style={{
@@ -572,9 +572,9 @@ export const InvitationContent: React.FC = () => {
         </div>
       </section>
 
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           4. OUR EVENTS SECTION
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <section
         id="events"
         style={{
@@ -619,7 +619,7 @@ export const InvitationContent: React.FC = () => {
               marginBottom: '48px',
             }}
           >
-            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 1: -œ¨ RECEPTION (SEPTEMBER 16) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
+            {/* ---------- CARD 1: - RECEPTION (SEPTEMBER 16) ---------- */}
             <motion.div
               whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
               style={{
@@ -660,7 +660,6 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>♥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
@@ -718,7 +717,7 @@ export const InvitationContent: React.FC = () => {
             </motion.div>
 
 
-            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 2:  MUHURTHAM (SEPTEMBER 17) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
+            {/* ---------- CARD 2:  MUHURTHAM (SEPTEMBER 17) ---------- */}
             <motion.div
               whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
               style={{
@@ -759,7 +758,6 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>♥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
@@ -792,7 +790,7 @@ export const InvitationContent: React.FC = () => {
                         <Clock size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
                         <div>
                           <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>TIME: </span>
-                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>8:30 AM -€“ 10:00 AM</span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>8:30 AM - 10:00 AM</span>
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
@@ -870,9 +868,9 @@ export const InvitationContent: React.FC = () => {
         </div>
       </section>
 
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           5. GUEST BLESSINGS & WISHES SECTION (BLESSINGS)
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <section
         id="blessings"
         style={{
@@ -991,7 +989,7 @@ export const InvitationContent: React.FC = () => {
 
           <button type="submit" className="btn-gold" style={{ width: '100%', padding: '14px' }}>
             <Send size={16} />
-            <span>{submittedBlessing ? 'BLESSING SENT! -¤ï¸' : 'SEND BLESSING'}</span>
+            <span>{submittedBlessing ? 'BLESSING SENT! -' : 'SEND BLESSING'}</span>
           </button>
         </form>
 
@@ -1002,7 +1000,7 @@ export const InvitationContent: React.FC = () => {
           </p>
         ) : blessings.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#9B8C80', fontSize: '0.9rem', padding: '24px 0' }}>
-            Be the first to leave a blessing ♥
+            Be the first to leave a blessing 
           </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -1038,9 +1036,9 @@ export const InvitationContent: React.FC = () => {
         )}
       </section>
 
-      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
+      {/* -------------------------------------------------
           6. FOOTER
-         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
+         ------------------------------------------------- */}
       <footer
         style={{
           padding: '48px 24px',
@@ -1057,7 +1055,7 @@ export const InvitationContent: React.FC = () => {
           {weddingConfig.couple.hashtag}
         </p>
         <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
-          September 17, 2026 -€¢ Made with -¤ï¸
+          September 17, 2026 - Made with -
         </p>
       </footer>
     </div>
