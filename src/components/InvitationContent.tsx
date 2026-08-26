@@ -1055,9 +1055,9 @@ export const InvitationContent: React.FC = () => {
           {weddingConfig.couple.hashtag}
         </p>
         <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
-          September 17, 2026 - Made with love
+          September 17, 2026 
         </p>
-        <p style={{ fontSize: '0.72rem', color: '#6B5F55', marginTop: '10px', letterSpacing: '0.08em' }}>
+        <p style={{ fontFamily: 'var(--font-script)', fontSize: '1.6rem', color: '#D4AF37', marginTop: '14px' }}>
           Lovingly Crafted by Divyanand
         </p>
       </footer>
