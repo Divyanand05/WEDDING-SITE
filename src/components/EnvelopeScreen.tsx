@@ -8,20 +8,14 @@ interface EnvelopeScreenProps {
   onOpenComplete: () => void;
 }
 
-export type InteractiveStep = 'ring' | 'candle' | 'envelope' | 'card_slide';
+export type InteractiveStep = 'candle' | 'envelope' | 'card_slide';
 
 export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }) => {
-  const [step, setStep] = useState<InteractiveStep>('ring');
+  const [step, setStep] = useState<InteractiveStep>('candle');
   const [candleLit, setCandleLit] = useState(false);
   const [sealCracked, setSealCracked] = useState(false);
 
-  // 1. Ring Tap Handler
-  const handleRingTap = () => {
-    playHarpChime();
-    setStep('candle');
-  };
-
-  // 2. Candle Tap Handler
+  // 1. Candle Tap Handler
   const handleCandleTap = () => {
     playHarpChime();
     setCandleLit(true);
@@ -30,7 +24,7 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
     }, 1200);
   };
 
-  // 3. Wax Seal Tap Handler
+  // 2. Wax Seal Tap Handler
   const handleSealTap = () => {
     if (sealCracked) return;
     playPaperRustle();
@@ -110,106 +104,7 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
 
       <AnimatePresence mode="wait">
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            STEP 1: 💍 RING INTERACTION
-           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-        {step === 'ring' && (
-          <motion.div
-            key="step-ring"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: -20 }}
-            transition={{ duration: 0.7 }}
-            style={{
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              zIndex: 12,
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                letterSpacing: '0.3em',
-                textTransform: 'uppercase',
-                color: '#D4AF37',
-                marginBottom: '8px',
-                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
-              }}
-            >
-              STEP 1 OF 3
-            </p>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif-luxury)',
-                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-                color: '#FFFDF9',
-                marginBottom: '28px',
-                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
-              }}
-            >
-              Tap the Ring to Begin
-            </h2>
-
-
-            {/* Interactive Wedding Ring Container */}
-            <motion.div
-              onClick={handleRingTap}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              animate={{ y: [0, -8, 0] }}
-              transition={{ y: { repeat: Infinity, duration: 2.5, ease: 'easeInOut' } }}
-              style={{
-                position: 'relative',
-                width: '130px',
-                height: '130px',
-                borderRadius: '50%',
-                background: 'rgba(255, 253, 249, 0.9)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(212, 175, 55, 0.4)',
-                boxShadow: '0 12px 36px rgba(212, 175, 55, 0.35), inset 0 0 15px rgba(255, 255, 255, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              {/* Shimmering Ring Icon SVG */}
-              <svg width="72" height="72" viewBox="0 0 100 100" fill="none">
-                <circle cx="50" cy="50" r="32" stroke="url(#ringGold)" strokeWidth="9" />
-                <circle cx="50" cy="50" r="36.5" stroke="#FFF" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
-                {/* Diamond Sparkle at top of ring */}
-                <path d="M50 12 L54 18 L50 24 L46 18 Z" fill="#FFFDF9" stroke="#D4AF37" strokeWidth="1" />
-                <circle cx="50" cy="18" r="3" fill="#FFF" />
-                <defs>
-                  <linearGradient id="ringGold" x1="0" y1="0" x2="100" y2="100">
-                    <stop offset="0%" stopColor="#ECC880" />
-                    <stop offset="50%" stopColor="#D4AF37" />
-                    <stop offset="100%" stopColor="#9A7B38" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </motion.div>
-
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.82rem',
-                letterSpacing: '0.15em',
-                color: '#8A7060',
-                marginTop: '28px',
-                textTransform: 'uppercase',
-              }}
-            >
-              ✨ Tap to exchange blessings ✨
-            </p>
-          </motion.div>
-        )}
-
-        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            STEP 2: 🕯️ LIGHT THE CANDLE RITUAL
+            STEP 1: 🕯️ LIGHT THE CANDLE RITUAL
            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 'candle' && (
           <motion.div
@@ -238,7 +133,7 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                 textShadow: '0 2px 8px rgba(0,0,0,0.8)',
               }}
             >
-              STEP 2 OF 3
+              STEP 1 OF 2
             </p>
             <h2
               style={{
@@ -380,7 +275,7 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                 textShadow: '0 2px 8px rgba(0,0,0,0.8)',
               }}
             >
-              STEP 3 OF 3
+              STEP 2 OF 2
             </p>
             <h2
               style={{
@@ -472,7 +367,7 @@ export const EnvelopeScreen: React.FC<EnvelopeScreenProps> = ({ onOpenComplete }
                   SAVE THE DATE
                 </p>
                 <h3 style={{ fontFamily: 'var(--font-script)', fontSize: '1.5rem', color: '#3A2C22', lineHeight: 1.1, marginBottom: '4px' }}>
-                  {weddingConfig.couple.bride.firstName} &amp; {weddingConfig.couple.groom.firstName}
+                  {weddingConfig.couple.groom.firstName} &amp; {weddingConfig.couple.bride.firstName}
                 </h3>
                 <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.7rem', letterSpacing: '0.15em', color: '#C5A059', fontWeight: 600 }}>
                   {weddingConfig.schedule.displayDate}

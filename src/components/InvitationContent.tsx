@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+﻿import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
   MapPin,
-  MessageCircle,
   ExternalLink,
   Share2,
   Menu,
@@ -11,32 +10,18 @@ import {
   Send,
 } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
-
-
-interface Blessing {
-  name: string;
-  message: string;
-  date: string;
-}
+import { submitBlessing, getFeaturedBlessings, Blessing } from '../config/blessings';
 
 export const InvitationContent: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Blessings Guest Book State
-  const [blessings, setBlessings] = useState<Blessing[]>([
-    {
-      name: "Suresh & Family",
-      message: "Wishing Jananee & Arivannal a lifetime of love, laughter, and endless happiness together!",
-      date: "Today",
-    },
-    {
-      name: "Anitha R.",
-      message: "So thrilled to celebrate your special day! May your bond grow stronger with each passing day.",
-      date: "Yesterday",
-    },
-  ]);
+  const [blessings, setBlessings] = useState<Blessing[]>([]);
+  const [blessingsLoading, setBlessingsLoading] = useState(true);
 
+  // Selected/Expanded Event in "OUR EVENTS" section ('reception' | 'muhurtham' | null)
+  const [expandedEvent, setExpandedEvent] = useState<'reception' | 'muhurtham' | null>(null);
   const [guestName, setGuestName] = useState('');
   const [guestMessage, setGuestMessage] = useState('');
   const [submittedBlessing, setSubmittedBlessing] = useState(false);
@@ -77,8 +62,8 @@ export const InvitationContent: React.FC = () => {
     if (navigator.share) {
       navigator
         .share({
-          title: 'Jananee & Arivannal Wedding Invitation',
-          text: 'You are warmly invited to celebrate the wedding of Jananee & Arivannal!',
+          title: `${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName} Wedding Invitation`,
+          text: `You are warmly invited to celebrate the wedding of ${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}!`,
           url: window.location.href,
         })
         .catch(() => {});
@@ -89,75 +74,26 @@ export const InvitationContent: React.FC = () => {
     }
   };
 
-  // Initialize Blessings from localStorage if available
+  // Load featured blessings from Firebase
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('wedding_blessings');
-      if (saved) {
-        setBlessings(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.debug(e);
-    }
+    getFeaturedBlessings()
+      .then((data) => setBlessings(data))
+      .catch(() => {})
+      .finally(() => setBlessingsLoading(false));
   }, []);
 
   const handleAddBlessing = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim() || !guestMessage.trim()) return;
-
-    const newBlessing: Blessing = {
-      name: guestName.trim(),
-      message: guestMessage.trim(),
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    };
-
-    const updated = [newBlessing, ...blessings];
-    setBlessings(updated);
-
     try {
-      localStorage.setItem('wedding_blessings', JSON.stringify(updated));
+      await submitBlessing(guestName, guestMessage);
     } catch (e) {
       console.debug(e);
     }
-
-    // Send POST to Google Sheets / Excel Webhook if configured
-    if (weddingConfig.rsvp.excelWebhookUrl) {
-      try {
-        await fetch(weddingConfig.rsvp.excelWebhookUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newBlessing),
-        });
-      } catch (err) {
-        console.debug('Webhook POST:', err);
-      }
-    }
-
     setGuestName('');
     setGuestMessage('');
     setSubmittedBlessing(true);
     setTimeout(() => setSubmittedBlessing(false), 3500);
-  };
-
-  // Download Guest Blessings directly as Microsoft Excel (.csv) file
-  const downloadExcelSheet = () => {
-    const headers = ['Guest Name', 'Blessings & Message', 'Date Submitted'];
-    const rows = blessings.map((b) => [
-      `"${b.name.replace(/"/g, '""')}"`,
-      `"${b.message.replace(/"/g, '""')}"`,
-      `"${b.date}"`,
-    ]);
-
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${weddingConfig.couple.groom.firstName}_${weddingConfig.couple.bride.firstName}_Guest_Blessings.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
 
@@ -181,9 +117,9 @@ export const InvitationContent: React.FC = () => {
         overflowX: 'hidden',
       }}
     >
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
           1. NAVIGATION HEADER (Matching Screenshot 2)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <header
         style={{
           position: 'fixed',
@@ -200,7 +136,7 @@ export const InvitationContent: React.FC = () => {
           WebkitBackdropFilter: 'blur(4px)',
         }}
       >
-        {/* Logo Monogram JA */}
+        {/* Logo Monogram DJ */}
         <div
           onClick={() => scrollToSection('home')}
           style={{
@@ -213,7 +149,7 @@ export const InvitationContent: React.FC = () => {
             textShadow: '0 2px 8px rgba(0,0,0,0.5)',
           }}
         >
-          JA
+          {weddingConfig.couple.monogram}
         </div>
 
         {/* Desktop Navigation Links */}
@@ -303,9 +239,9 @@ export const InvitationContent: React.FC = () => {
         )}
       </header>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
           2. HERO HERO BANNER (Matching Screenshot 2 EXACTLY)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <section
         id="home"
         style={{
@@ -324,7 +260,7 @@ export const InvitationContent: React.FC = () => {
           backgroundAttachment: 'scroll',
         }}
       >
-        {/* Dark Warm Mahogany Overlay — subtle so background photo is beautifully visible */}
+        {/* Dark Warm Mahogany Overlay â€” subtle so background photo is beautifully visible */}
         <div
           style={{
             position: 'absolute',
@@ -347,7 +283,7 @@ export const InvitationContent: React.FC = () => {
             width: '100%',
           }}
         >
-          {/* TOGETHER WITH THEIR FAMILIES, */}
+          {/* WITH THE BLESSINGS OF OUR FAMILIES, */}
           <p
             style={{
               fontFamily: 'var(--font-heading)',
@@ -359,10 +295,10 @@ export const InvitationContent: React.FC = () => {
               marginBottom: '20px',
             }}
           >
-            TOGETHER WITH THEIR FAMILIES,
+            {weddingConfig.couple.invitationPrefix || 'WITH THE BLESSINGS OF OUR FAMILIES,'}
           </p>
 
-          {/* Jananee & Arivannal */}
+          {/* Dinesshkumar & Jayakavi */}
           <h1
             style={{
               fontFamily: 'var(--font-serif-luxury)',
@@ -374,7 +310,7 @@ export const InvitationContent: React.FC = () => {
               textShadow: '0 4px 20px rgba(0,0,0,0.6)',
             }}
           >
-            {weddingConfig.couple.bride.firstName}{' '}
+            {weddingConfig.couple.groom.firstName}{' '}
             <span
               style={{
                 fontFamily: 'var(--font-script)',
@@ -385,8 +321,9 @@ export const InvitationContent: React.FC = () => {
             >
               &amp;
             </span>{' '}
-            {weddingConfig.couple.groom.firstName}
+            {weddingConfig.couple.bride.firstName}
           </h1>
+
 
           {/* Subtitle invitation text */}
           <p
@@ -414,7 +351,7 @@ export const InvitationContent: React.FC = () => {
               alignItems: 'center',
             }}
           >
-            {/* VIEW SCHEDULE ↓ */}
+            {/* VIEW SCHEDULE â†“ */}
             <button
               onClick={() => scrollToSection('events')}
               id="view-schedule-btn"
@@ -434,10 +371,10 @@ export const InvitationContent: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              VIEW SCHEDULE ↓
+              VIEW SCHEDULE â†“
             </button>
 
-            {/* SHARE INVITATION 🔗 */}
+            {/* SHARE INVITATION ðŸ”— */}
             <button
               onClick={handleShare}
               id="share-invitation-btn"
@@ -467,9 +404,9 @@ export const InvitationContent: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
           3. MOMENTS SECTION (Matching Screenshot 1 EXACTLY)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <section
         id="moments"
         style={{
@@ -522,7 +459,7 @@ export const InvitationContent: React.FC = () => {
             gap: '24px',
           }}
         >
-          {/* Card 1: Full Portrait Couple Photo */}
+          {/* Card 1 (Left): image copy 2 */}
           <motion.div
             whileHover={{ y: -6 }}
             style={{
@@ -533,15 +470,15 @@ export const InvitationContent: React.FC = () => {
               border: '1px solid rgba(212, 175, 55, 0.25)',
             }}
           >
-            <div style={{ height: '380px', overflow: 'hidden' }}>
+            <div style={{ height: '420px', overflow: 'hidden', background: '#F5ECE0' }}>
               <img
-                src={weddingConfig.couplePhotoUrl}
-                alt="Jananee & Arivannal"
+                src={weddingConfig.leftPhotoUrl || '/assets/image_copy_2.png'}
+                alt={`${weddingConfig.couple.groom.firstName} & ${weddingConfig.couple.bride.firstName}`}
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 20%',
+                  objectPosition: 'center 15%',
                 }}
               />
             </div>
@@ -559,7 +496,7 @@ export const InvitationContent: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Card 2: Traditional Attire Close-Up */}
+          {/* Card 2 (Center): image.png */}
           <motion.div
             whileHover={{ y: -6 }}
             style={{
@@ -570,15 +507,15 @@ export const InvitationContent: React.FC = () => {
               border: '1px solid rgba(212, 175, 55, 0.25)',
             }}
           >
-            <div style={{ height: '380px', overflow: 'hidden', background: '#F5ECE0' }}>
+            <div style={{ height: '420px', overflow: 'hidden', background: '#F5ECE0' }}>
               <img
-                src={weddingConfig.couplePhotoUrl}
+                src={weddingConfig.centerPhotoUrl || '/assets/image.png'}
                 alt="Sacred Union"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 50%',
+                  objectPosition: 'center 15%',
                 }}
               />
             </div>
@@ -596,7 +533,7 @@ export const InvitationContent: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Card 3: Couple Walking Arm-in-Arm */}
+          {/* Card 3 (Right): image copy 3 */}
           <motion.div
             whileHover={{ y: -6 }}
             style={{
@@ -607,15 +544,15 @@ export const InvitationContent: React.FC = () => {
               border: '1px solid rgba(212, 175, 55, 0.25)',
             }}
           >
-            <div style={{ height: '380px', overflow: 'hidden' }}>
+            <div style={{ height: '420px', overflow: 'hidden', background: '#F5ECE0' }}>
               <img
-                src={weddingConfig.couplePhotoUrl}
+                src={weddingConfig.rightPhotoUrl || '/assets/image_copy_3.png'}
                 alt="Together Forever"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 80%',
+                  objectPosition: 'center 5%',
                 }}
               />
             </div>
@@ -635,9 +572,9 @@ export const InvitationContent: React.FC = () => {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          4. EVENTS & LOCATION SECTION (EVENTS)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+          4. OUR EVENTS SECTION
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <section
         id="events"
         style={{
@@ -647,7 +584,7 @@ export const InvitationContent: React.FC = () => {
           borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
         }}
       >
-        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
           <p
             style={{
               fontFamily: 'var(--font-heading)',
@@ -659,18 +596,226 @@ export const InvitationContent: React.FC = () => {
               marginBottom: '10px',
             }}
           >
-            JOIN US IN CELEBRATION
+            CELEBRATE WITH US
           </p>
           <h2
             style={{
               fontFamily: 'var(--font-serif-luxury)',
-              fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
+              fontSize: 'clamp(2.4rem, 6vw, 4rem)',
               color: '#34251D',
-              marginBottom: '32px',
+              marginBottom: '40px',
+              letterSpacing: '0.04em',
             }}
           >
-            Wedding Date &amp; Location
+            OUR EVENTS
           </h2>
+
+          {/* TWO MAIN INTERACTIVE EVENT CARDS */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '28px',
+              marginBottom: '48px',
+            }}
+          >
+            {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARD 1: âœ¨ RECEPTION (SEPTEMBER 16) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            <motion.div
+              whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
+              style={{
+                background: '#FDFAF4',
+                borderRadius: '24px',
+                border: '1.5px solid rgba(212, 175, 55, 0.45)',
+                boxShadow: '0 12px 36px rgba(60, 40, 20, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onClick={() => setExpandedEvent(expandedEvent === 'reception' ? null : 'reception')}
+            >
+              {/* Gold corner accents */}
+              <div style={{ position: 'absolute', top: '12px', left: '12px', width: '22px', height: '22px', borderTop: '2px solid #D4AF37', borderLeft: '2px solid #D4AF37', borderRadius: '4px 0 0 0', opacity: 0.85, zIndex: 5 }} />
+              <div style={{ position: 'absolute', top: '12px', right: '12px', width: '22px', height: '22px', borderTop: '2px solid #D4AF37', borderRight: '2px solid #D4AF37', borderRadius: '0 4px 0 0', opacity: 0.85, zIndex: 5 }} />
+
+              {/* Full bleed photo */}
+              <div style={{ width: '100%', height: '320px', position: 'relative', overflow: 'hidden', borderRadius: '22px 22px 0 0' }}>
+                <img
+                  src="/assets/reception_card.png"
+                  alt="Reception"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
+                  background: 'linear-gradient(to bottom, transparent 0%, rgba(253,250,244,0.92) 100%)',
+                  pointerEvents: 'none',
+                }} />
+              </div>
+
+              {/* Text content below image */}
+              <div style={{ padding: '8px 28px 28px', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
+                  <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>â™¥</span>
+                  <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
+                  RECEPTION
+                </h3>
+                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.05rem', color: '#A37E30', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '20px' }}>
+                  16 SEPTEMBER 2026
+                </p>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '999px',
+                  background: expandedEvent === 'reception' ? 'linear-gradient(135deg, #C5A059 0%, #A37E30 100%)' : 'rgba(212, 175, 55, 0.12)',
+                  border: '1px solid rgba(212, 175, 55, 0.5)',
+                  color: expandedEvent === 'reception' ? '#FFFFFF' : '#8C6A28',
+                  fontFamily: 'var(--font-heading)', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s ease',
+                  boxShadow: expandedEvent === 'reception' ? '0 4px 14px rgba(163, 126, 48, 0.4)' : 'none',
+                }}>
+                  <span>{expandedEvent === 'reception' ? 'HIDE DETAILS â†‘' : 'TAP FOR DETAILS â†“'}</span>
+                </div>
+                <AnimatePresence>
+                  {expandedEvent === 'reception' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: 'easeOut' }}
+                      style={{ width: '100%', borderTop: '1px solid rgba(212, 175, 55, 0.25)', paddingTop: '20px', marginTop: '20px', textAlign: 'left' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                        <Clock size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>TIME: </span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>7:00 PM Onwards</span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                        <MapPin size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>VENUE: </span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>VEL SOKKANATHAN THIRUMANA NILAYAM</span>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: '0.85rem', color: '#685A50', lineHeight: 1.5, marginBottom: '16px' }}>
+                        Join us for a grand musical evening, greetings & photography on stage, followed by an exquisite celebratory dinner banquet.
+                      </p>
+                      <a href="https://maps.app.goo.gl/1EC95Lvk3EvRPn3VA" target="_blank" rel="noopener noreferrer" className="btn-gold" style={{ width: '100%', padding: '12px', fontSize: '0.76rem', borderRadius: '8px' }}>
+                        <MapPin size={15} />
+                        <span>VIEW LOCATION ON GOOGLE MAPS</span>
+                        <ExternalLink size={13} />
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+
+            {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARD 2: ðŸ’ MUHURTHAM (SEPTEMBER 17) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            <motion.div
+              whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
+              style={{
+                background: '#FDFAF4',
+                borderRadius: '24px',
+                border: '1.5px solid rgba(212, 175, 55, 0.45)',
+                boxShadow: '0 12px 36px rgba(60, 40, 20, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onClick={() => setExpandedEvent(expandedEvent === 'muhurtham' ? null : 'muhurtham')}
+            >
+              {/* Gold corner accents */}
+              <div style={{ position: 'absolute', top: '12px', left: '12px', width: '22px', height: '22px', borderTop: '2px solid #D4AF37', borderLeft: '2px solid #D4AF37', borderRadius: '4px 0 0 0', opacity: 0.85, zIndex: 5 }} />
+              <div style={{ position: 'absolute', top: '12px', right: '12px', width: '22px', height: '22px', borderTop: '2px solid #D4AF37', borderRight: '2px solid #D4AF37', borderRadius: '0 4px 0 0', opacity: 0.85, zIndex: 5 }} />
+
+              {/* Full bleed photo */}
+              <div style={{ width: '100%', height: '320px', position: 'relative', overflow: 'hidden', borderRadius: '22px 22px 0 0' }}>
+                <img
+                  src="/assets/muhurtham_card.png"
+                  alt="Muhurtham"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center center', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
+                  background: 'linear-gradient(to bottom, transparent 0%, rgba(253,250,244,0.92) 100%)',
+                  pointerEvents: 'none',
+                }} />
+              </div>
+
+              {/* Text content below image */}
+              <div style={{ padding: '8px 28px 28px', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
+                  <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>â™¥</span>
+                  <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
+                  MUHURTHAM
+                </h3>
+                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.05rem', color: '#A37E30', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '20px' }}>
+                  17 SEPTEMBER 2026
+                </p>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '999px',
+                  background: expandedEvent === 'muhurtham' ? 'linear-gradient(135deg, #C5A059 0%, #A37E30 100%)' : 'rgba(212, 175, 55, 0.12)',
+                  border: '1px solid rgba(212, 175, 55, 0.5)',
+                  color: expandedEvent === 'muhurtham' ? '#FFFFFF' : '#8C6A28',
+                  fontFamily: 'var(--font-heading)', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s ease',
+                  boxShadow: expandedEvent === 'muhurtham' ? '0 4px 14px rgba(163, 126, 48, 0.4)' : 'none',
+                }}>
+                  <span>{expandedEvent === 'muhurtham' ? 'HIDE DETAILS â†‘' : 'TAP FOR DETAILS â†“'}</span>
+                </div>
+                <AnimatePresence>
+                  {expandedEvent === 'muhurtham' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: 'easeOut' }}
+                      style={{ width: '100%', borderTop: '1px solid rgba(212, 175, 55, 0.25)', paddingTop: '20px', marginTop: '20px', textAlign: 'left' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                        <Clock size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>TIME: </span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>8:30 AM â€“ 10:00 AM</span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                        <MapPin size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>VENUE: </span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>VEL SOKKANATHAN THIRUMANA NILAYAM</span>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: '0.85rem', color: '#685A50', lineHeight: 1.5, marginBottom: '16px' }}>
+                        The sacred traditional wedding rituals, tying of the sacred knot & feast.
+                      </p>
+                      <a href="https://maps.app.goo.gl/1EC95Lvk3EvRPn3VA" target="_blank" rel="noopener noreferrer" className="btn-gold" style={{ width: '100%', padding: '12px', fontSize: '0.76rem', borderRadius: '8px' }}>
+                        <MapPin size={15} />
+                        <span>VIEW LOCATION ON GOOGLE MAPS</span>
+                        <ExternalLink size={13} />
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </div>
 
           {/* Countdown Timer Grid */}
           <div
@@ -678,7 +823,7 @@ export const InvitationContent: React.FC = () => {
               display: 'flex',
               justifyContent: 'center',
               gap: '14px',
-              marginBottom: '40px',
+              marginBottom: '36px',
               flexWrap: 'wrap',
             }}
           >
@@ -708,67 +853,10 @@ export const InvitationContent: React.FC = () => {
             </div>
           </div>
 
-          {/* Schedule Details Card */}
-          <div
-            style={{
-              background: '#FFFFFF',
-              borderRadius: '20px',
-              padding: '36px 28px',
-              boxShadow: '0 12px 36px rgba(60, 40, 20, 0.08)',
-              border: '1px solid rgba(212, 175, 55, 0.3)',
-              marginBottom: '36px',
-            }}
-          >
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif-luxury)',
-                fontSize: '2rem',
-                color: '#A37E30',
-                marginBottom: '6px',
-              }}
-            >
-              {weddingConfig.schedule.displayDate}
-            </h3>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#6E6054', letterSpacing: '0.1em', marginBottom: '24px' }}>
-              {weddingConfig.schedule.dayOfWeek} at {weddingConfig.schedule.time}
-            </p>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                gap: '20px',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ background: '#FAF7F2', padding: '20px', borderRadius: '14px', border: '1px solid rgba(212,175,55,0.2)' }}>
-                <Clock style={{ color: '#A37E30', marginBottom: '8px' }} />
-                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.15em', color: '#382D25' }}>TIMING</h4>
-                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: '#A37E30', marginTop: '4px' }}>
-                  {weddingConfig.schedule.time}
-                </p>
-                <p style={{ fontSize: '0.78rem', color: '#7E7064', marginTop: '4px' }}>
-                  Sacred Ceremony followed by Reception
-                </p>
-              </div>
-
-              <div style={{ background: '#FAF7F2', padding: '20px', borderRadius: '14px', border: '1px solid rgba(212,175,55,0.2)' }}>
-                <MapPin style={{ color: '#A37E30', marginBottom: '8px' }} />
-                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.15em', color: '#382D25' }}>LOCATION</h4>
-                <p style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: '#382D25', marginTop: '4px', fontWeight: 600 }}>
-                  {weddingConfig.venue.name}
-                </p>
-                <p style={{ fontSize: '0.78rem', color: '#7E7064', marginTop: '4px' }}>
-                  {weddingConfig.venue.streetAddress}, {weddingConfig.venue.cityStateZip}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
+          {/* Action Buttons (Maps only) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '480px', margin: '0 auto' }}>
             <a
-              href={weddingConfig.venue.googleMapsUrl}
+              href="https://maps.app.goo.gl/1EC95Lvk3EvRPn3VA"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-gold"
@@ -778,29 +866,13 @@ export const InvitationContent: React.FC = () => {
               <span>VIEW LOCATION ON GOOGLE MAPS</span>
               <ExternalLink size={14} />
             </a>
-
-            <a
-              href={`https://wa.me/${weddingConfig.rsvp.whatsappNumber}?text=${encodeURIComponent(weddingConfig.rsvp.defaultMessageTemplate)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-gold"
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
-              }}
-            >
-              <MessageCircle size={18} />
-              <span>RSVP VIA WHATSAPP</span>
-              <ExternalLink size={14} />
-            </a>
           </div>
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
           5. GUEST BLESSINGS & WISHES SECTION (BLESSINGS)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <section
         id="blessings"
         style={{
@@ -835,31 +907,6 @@ export const InvitationContent: React.FC = () => {
           <p style={{ fontSize: '0.9rem', color: '#736559', marginTop: '6px' }}>
             Share your love &amp; warm wishes for {weddingConfig.couple.bride.firstName} &amp; {weddingConfig.couple.groom.firstName}
           </p>
-          <div style={{ marginTop: '16px' }}>
-            <button
-              type="button"
-              onClick={downloadExcelSheet}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                borderRadius: '999px',
-                background: 'rgba(212, 175, 55, 0.12)',
-                border: '1px solid rgba(212, 175, 55, 0.5)',
-                color: '#8C6A28',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <span>📊 Download Blessings Excel Sheet (.csv)</span>
-            </button>
-          </div>
         </div>
 
 
@@ -944,42 +991,56 @@ export const InvitationContent: React.FC = () => {
 
           <button type="submit" className="btn-gold" style={{ width: '100%', padding: '14px' }}>
             <Send size={16} />
-            <span>{submittedBlessing ? 'BLESSING SENT! ❤️' : 'SEND BLESSING'}</span>
+            <span>{submittedBlessing ? 'BLESSING SENT! â¤ï¸' : 'SEND BLESSING'}</span>
           </button>
         </form>
 
-        {/* Guest Blessings Stream */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          {blessings.map((b, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              style={{
-                background: '#FFFFFF',
-                borderRadius: '16px',
-                padding: '22px',
-                border: '1px solid rgba(212, 175, 55, 0.25)',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <h4 style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.25rem', color: '#34251D', fontWeight: 600 }}>
+        {/* ─── FEATURED BLESSINGS FROM FIREBASE ─── */}
+        {blessingsLoading ? (
+          <p style={{ textAlign: 'center', color: '#A37E30', fontFamily: 'var(--font-serif-luxury)', fontSize: '1rem', padding: '24px 0' }}>
+            Loading blessings...
+          </p>
+        ) : blessings.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#9B8C80', fontSize: '0.9rem', padding: '24px 0' }}>
+            Be the first to leave a blessing ♥
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {blessings.map((b, i) => (
+              <motion.div
+                key={b.id ?? i}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                style={{
+                  background: 'linear-gradient(135deg, #FFFDF5 0%, #FDF5E2 100%)',
+                  borderRadius: '20px',
+                  padding: '28px 24px',
+                  border: '1.5px solid rgba(212, 175, 55, 0.45)',
+                  boxShadow: '0 8px 28px rgba(212,175,55,0.1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+                  background: 'linear-gradient(90deg, #D4AF37, #ECC880, #C5A059)',
+                }} />
+                <h4 style={{ fontFamily: 'var(--font-serif-luxury)', fontSize: '1.2rem', color: '#34251D', fontWeight: 600, marginBottom: '10px' }}>
                   {b.name}
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#9B8C80' }}>{b.date}</span>
-              </div>
-              <p style={{ fontSize: '0.88rem', color: '#65574E', lineHeight: 1.6, fontStyle: 'italic' }}>
-                "{b.message}"
-              </p>
-            </motion.div>
-          ))}
-        </div>
+                <p style={{ fontSize: '0.92rem', color: '#65574E', lineHeight: 1.7, fontStyle: 'italic' }}>
+                  "{b.message}"
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
           6. FOOTER
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
       <footer
         style={{
           padding: '48px 24px',
@@ -990,13 +1051,13 @@ export const InvitationContent: React.FC = () => {
         }}
       >
         <p style={{ fontFamily: 'var(--font-script)', fontSize: '2.8rem', color: '#D4AF37', marginBottom: '4px' }}>
-          Jananee &amp; Arivannal
+          {weddingConfig.couple.groom.firstName} &amp; {weddingConfig.couple.bride.firstName}
         </p>
         <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.82rem', letterSpacing: '0.22em', color: '#C5A059' }}>
           {weddingConfig.couple.hashtag}
         </p>
         <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
-          September 17, 2026 • Made with ❤️
+          September 17, 2026 â€¢ Made with â¤ï¸
         </p>
       </footer>
     </div>

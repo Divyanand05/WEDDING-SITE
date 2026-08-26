@@ -75,7 +75,10 @@ export interface WeddingConfig {
 }
 
 export const weddingConfig = {
-  couplePhotoUrl: '/assets/couple.jpg',
+  couplePhotoUrl: '/assets/image_copy.png',
+  leftPhotoUrl: '/assets/image_copy_2.png',
+  centerPhotoUrl: '/assets/image.png',
+  rightPhotoUrl: '/assets/image_copy_3.png',
   couple: {
     groom: {
       firstName: "Dinesshkumar",
@@ -90,66 +93,85 @@ export const weddingConfig = {
     monogram: "DJ",
     hashtag: "#DinesshkumarAndJayakavi",
     storyQuote: "Two hearts, blessed by family & bound by love.",
+    invitationPrefix: "WITH THE BLESSINGS OF OUR FAMILIES,",
     welcomeMessage:
-      "joyfully invite you to witness the beginning of their forever — a union of two hearts, blessed by family & bound by love.",
+      "cordially invite you and your family to grace the joyous wedding celebration and shower your heartfelt blessings as they begin their journey of love and togetherness.",
   },
 
 
   schedule: {
-    isoDate: "2026-09-17T18:30:00+05:30",
-    displayDate: "17 SEPTEMBER 2026",
-    dayOfWeek: "Thursday",
-    time: "6:30 PM",
+    isoDate: "2026-09-17T06:00:00+05:30",
+    displayDate: "16 & 17 SEPTEMBER 2026",
+    dayOfWeek: "Wednesday & Thursday",
+    time: "Celebrations Begin at 6:30 PM",
     timezone: "IST / Local Time",
+    reception: {
+      title: "RECEPTION",
+      badge: "✨ RECEPTION",
+      icon: "Sparkles",
+      photoUrl: "/assets/reception_card.png",
+      date: "SEPTEMBER 16, 2026",
+      displayDate: "SEPTEMBER 16",
+      day: "Wednesday",
+      time: "7:00 PM Onwards",
+      venueName: "VEL SOKKANATHAN THIRUMANA NILAYAM",
+      description: "An evening filled with joy, dinner, music & celebration to honor the couple.",
+    },
+    muhurtham: {
+      title: "MUHURTHAM",
+      badge: "💍 MUHURTHAM",
+      icon: "HeartHandshake",
+      photoUrl: "/assets/muhurtham_card.png",
+      date: "SEPTEMBER 17, 2026",
+      displayDate: "SEPTEMBER 17",
+      day: "Thursday",
+      time: "8:30 AM – 10:00 AM (Auspicious Muhurtham)",
+      venueName: "VEL SOKKANATHAN THIRUMANA NILAYAM",
+      description: "The sacred traditional wedding rituals, tying of the sacred knot & feast.",
+    },
     events: [
       {
-        time: "5:30 PM",
-        title: "Guest Arrival & Welcome Refreshments",
-        description: "Welcome champagne, botanical mocktails, and live acoustic quartet in the Courtyard.",
-        iconName: "GlassWater",
-      },
-      {
-        time: "6:30 PM",
-        title: "Sacred Wedding Ceremony",
-        description: "The exchange of vows and rings beneath the floral grand archway at sunset.",
-        iconName: "HeartHandshake",
-      },
-      {
-        time: "7:45 PM",
-        title: "Cocktail & Golden Hour Reception",
-        description: "Artisanal hors d'oeuvres, signature couple cocktails, and live jazz.",
+        time: "Sep 16 • 7:00 PM",
+        title: "Wedding Reception",
+        description: "Grand welcome, stage photography, dinner & musical evening.",
         iconName: "Sparkles",
       },
       {
-        time: "8:45 PM",
-        title: "Gourmet Banquet & Toasts",
-        description: "A candlelit 4-course culinary dinner, heartfelt speeches, and cake cutting.",
-        iconName: "UtensilsCrossed",
-      },
-      {
-        time: "10:00 PM",
-        title: "First Dance & Midnight Celebration",
-        description: "Dancing under the stars followed by a sparkler send-off.",
-        iconName: "Music",
+        time: "Sep 17 • 8:30 AM",
+        title: "Auspicious Muhurtham",
+        description: "Sacred marriage rituals, Kanyadanam, Mangalsutra dharanam & traditional feast.",
+        iconName: "HeartHandshake",
       },
     ],
   },
+  // Best & Featured Messages (Updated by couple)
+  bestMessages: [
+    {
+      name: "Beloved Parents",
+      tag: "Family Blessings",
+      message: "May your married life blossom with endless love, peace, understanding, and divine grace. You make our hearts proud.",
+      isSpecial: true,
+    },
+    {
+      name: "Elders & Grandparents",
+      tag: "Sacred Wishes",
+      message: "May the sacred vows you take today guide your path with harmony, health, and prosperity forever.",
+      isSpecial: true,
+    },
+    {
+      name: "Closest Friends & Well-Wishers",
+      tag: "Love & Cheers",
+      message: "To our favorite duo, Dinesshkumar & Jayakavi! Wishing you both a lifetime of adventure, laughter, and unbreakable companionship!",
+      isSpecial: false,
+    },
+  ],
   venue: {
-    name: "The Rosewood Villa & Botanical Glasshouse",
-    subVenue: "Grand Sunken Pavilion",
-    streetAddress: "742 Magnolia Blossom Way",
-    cityStateZip: "Beverly Hills, CA 90210",
-    country: "USA",
-    googleMapsUrl: "https://maps.google.com/?q=The+Rosewood+Villa+Estate",
-  },
-  rsvp: {
-    whatsappNumber: "15551234567",
-    defaultMessageTemplate:
-      "Hi Jananee & Arivannal! 💌 I received your beautiful wedding invitation. I would love to RSVP for your wedding on September 17, 2026! My Name: [Your Name] | Number of Guests Attending: [1/2]",
-    deadlineDate: "10 September 2026",
-    emailContact: "celebrate@jananeeandarivannal.com",
-    // Excel / Google Sheets Webhook URL (Paste your Google Apps Script / SheetDB Webhook URL here to save directly into Excel!)
-    excelWebhookUrl: "",
+    name: "VEL SOKKANATHAN THIRUMANA NILAYAM",
+    subVenue: "",
+    streetAddress: "",
+    cityStateZip: "",
+    country: "India",
+    googleMapsUrl: "https://maps.app.goo.gl/1EC95Lvk3EvRPn3VA",
   },
 
   details: {
@@ -170,7 +192,6 @@ export const weddingConfig = {
     ivoryBg: "#FDFBF7",
     blushAccent: "#EAD8C0",
     enableAudio: true,
-    // High-quality soothing romantic royalty-free acoustic cello & piano stream
-    musicUrl: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_c97a5525d8.mp3?filename=romantic-wedding-piano-112191.mp3",
+    musicUrl: "/music/ill.mp3",
   },
 };
