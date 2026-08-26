@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
@@ -117,9 +117,9 @@ export const InvitationContent: React.FC = () => {
         overflowX: 'hidden',
       }}
     >
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           1. NAVIGATION HEADER (Matching Screenshot 2)
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <header
         style={{
           position: 'fixed',
@@ -239,9 +239,9 @@ export const InvitationContent: React.FC = () => {
         )}
       </header>
 
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           2. HERO HERO BANNER (Matching Screenshot 2 EXACTLY)
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <section
         id="home"
         style={{
@@ -260,7 +260,7 @@ export const InvitationContent: React.FC = () => {
           backgroundAttachment: 'scroll',
         }}
       >
-        {/* Dark Warm Mahogany Overlay â€” subtle so background photo is beautifully visible */}
+        {/* Dark Warm Mahogany Overlay -€” subtle so background photo is beautifully visible */}
         <div
           style={{
             position: 'absolute',
@@ -351,7 +351,7 @@ export const InvitationContent: React.FC = () => {
               alignItems: 'center',
             }}
           >
-            {/* VIEW SCHEDULE â†“ */}
+            {/* VIEW SCHEDULE -†“ */}
             <button
               onClick={() => scrollToSection('events')}
               id="view-schedule-btn"
@@ -371,7 +371,7 @@ export const InvitationContent: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              VIEW SCHEDULE â†“
+              VIEW SCHEDULE -†“
             </button>
 
             {/* SHARE INVITATION ðŸ”— */}
@@ -404,9 +404,9 @@ export const InvitationContent: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           3. MOMENTS SECTION (Matching Screenshot 1 EXACTLY)
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <section
         id="moments"
         style={{
@@ -572,9 +572,9 @@ export const InvitationContent: React.FC = () => {
         </div>
       </section>
 
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           4. OUR EVENTS SECTION
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <section
         id="events"
         style={{
@@ -619,7 +619,7 @@ export const InvitationContent: React.FC = () => {
               marginBottom: '48px',
             }}
           >
-            {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARD 1: âœ¨ RECEPTION (SEPTEMBER 16) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 1: -œ¨ RECEPTION (SEPTEMBER 16) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
             <motion.div
               whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
               style={{
@@ -660,7 +660,7 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>â™¥</span>
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>-™¥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
@@ -677,7 +677,7 @@ export const InvitationContent: React.FC = () => {
                   fontFamily: 'var(--font-heading)', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s ease',
                   boxShadow: expandedEvent === 'reception' ? '0 4px 14px rgba(163, 126, 48, 0.4)' : 'none',
                 }}>
-                  <span>{expandedEvent === 'reception' ? 'HIDE DETAILS â†‘' : 'TAP FOR DETAILS â†“'}</span>
+                  <span>{expandedEvent === 'reception' ? 'HIDE DETAILS' : 'TAP FOR DETAILS'}</span>
                 </div>
                 <AnimatePresence>
                   {expandedEvent === 'reception' && (
@@ -718,7 +718,7 @@ export const InvitationContent: React.FC = () => {
             </motion.div>
 
 
-            {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARD 2: ðŸ’ MUHURTHAM (SEPTEMBER 17) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 2: ðŸ’ MUHURTHAM (SEPTEMBER 17) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
             <motion.div
               whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
               style={{
@@ -759,7 +759,7 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>â™¥</span>
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>-™¥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
@@ -776,7 +776,7 @@ export const InvitationContent: React.FC = () => {
                   fontFamily: 'var(--font-heading)', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s ease',
                   boxShadow: expandedEvent === 'muhurtham' ? '0 4px 14px rgba(163, 126, 48, 0.4)' : 'none',
                 }}>
-                  <span>{expandedEvent === 'muhurtham' ? 'HIDE DETAILS â†‘' : 'TAP FOR DETAILS â†“'}</span>
+                  <span>{expandedEvent === 'muhurtham' ? 'HIDE DETAILS' : 'TAP FOR DETAILS'}</span>
                 </div>
                 <AnimatePresence>
                   {expandedEvent === 'muhurtham' && (
@@ -792,7 +792,7 @@ export const InvitationContent: React.FC = () => {
                         <Clock size={18} style={{ color: '#A37E30', flexShrink: 0 }} />
                         <div>
                           <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A7C72' }}>TIME: </span>
-                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>8:30 AM â€“ 10:00 AM</span>
+                          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#34251D' }}>8:30 AM -€“ 10:00 AM</span>
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
@@ -870,9 +870,9 @@ export const InvitationContent: React.FC = () => {
         </div>
       </section>
 
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           5. GUEST BLESSINGS & WISHES SECTION (BLESSINGS)
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <section
         id="blessings"
         style={{
@@ -991,11 +991,11 @@ export const InvitationContent: React.FC = () => {
 
           <button type="submit" className="btn-gold" style={{ width: '100%', padding: '14px' }}>
             <Send size={16} />
-            <span>{submittedBlessing ? 'BLESSING SENT! â¤ï¸' : 'SEND BLESSING'}</span>
+            <span>{submittedBlessing ? 'BLESSING SENT! -¤ï¸' : 'SEND BLESSING'}</span>
           </button>
         </form>
 
-        {/* ─── FEATURED BLESSINGS FROM FIREBASE ─── */}
+        {/* - FEATURED BLESSINGS FROM FIREBASE - */}
         {blessingsLoading ? (
           <p style={{ textAlign: 'center', color: '#A37E30', fontFamily: 'var(--font-serif-luxury)', fontSize: '1rem', padding: '24px 0' }}>
             Loading blessings...
@@ -1038,9 +1038,9 @@ export const InvitationContent: React.FC = () => {
         )}
       </section>
 
-      {/* â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+      {/* -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”
           6. FOOTER
-         â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” */}
+         -”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-”-” */}
       <footer
         style={{
           padding: '48px 24px',
@@ -1057,7 +1057,7 @@ export const InvitationContent: React.FC = () => {
           {weddingConfig.couple.hashtag}
         </p>
         <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
-          September 17, 2026 â€¢ Made with â¤ï¸
+          September 17, 2026 -€¢ Made with -¤ï¸
         </p>
       </footer>
     </div>
