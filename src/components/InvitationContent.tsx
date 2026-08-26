@@ -903,7 +903,7 @@ export const InvitationContent: React.FC = () => {
             Leave Your Blessings
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#736559', marginTop: '6px' }}>
-            Share your love &amp; warm wishes for {weddingConfig.couple.bride.firstName} &amp; {weddingConfig.couple.groom.firstName}
+            Share your love &amp; warm wishes for {weddingConfig.couple.groom.firstName} &amp; {weddingConfig.couple.bride.firstName}
           </p>
         </div>
 
