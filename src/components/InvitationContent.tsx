@@ -1057,6 +1057,9 @@ export const InvitationContent: React.FC = () => {
         <p style={{ fontSize: '0.75rem', color: '#8A7C72', marginTop: '18px' }}>
           September 17, 2026 - Made with love
         </p>
+        <p style={{ fontSize: '0.72rem', color: '#6B5F55', marginTop: '10px', letterSpacing: '0.08em' }}>
+          Lovingly Crafted by Divyanand
+        </p>
       </footer>
     </div>
   );
