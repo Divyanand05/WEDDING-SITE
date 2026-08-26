@@ -1,4 +1,4 @@
-﻿﻿import React, { useState, useEffect } from 'react';
+﻿﻿﻿﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
@@ -351,7 +351,7 @@ export const InvitationContent: React.FC = () => {
               alignItems: 'center',
             }}
           >
-            {/* VIEW SCHEDULE -†“ */}
+            {/* VIEW SCHEDULE */}
             <button
               onClick={() => scrollToSection('events')}
               id="view-schedule-btn"
@@ -371,10 +371,10 @@ export const InvitationContent: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              VIEW SCHEDULE -†“
+              VIEW SCHEDULE ↓
             </button>
 
-            {/* SHARE INVITATION ðŸ”— */}
+            {/* SHARE INVITATION  */}
             <button
               onClick={handleShare}
               id="share-invitation-btn"
@@ -660,7 +660,7 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>-™¥</span>
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>♥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
@@ -718,7 +718,7 @@ export const InvitationContent: React.FC = () => {
             </motion.div>
 
 
-            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 2: ðŸ’ MUHURTHAM (SEPTEMBER 17) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
+            {/* -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ CARD 2:  MUHURTHAM (SEPTEMBER 17) -”€-”€-”€-”€-”€-”€-”€-”€-”€-”€ */}
             <motion.div
               whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(60, 40, 20, 0.18), 0 0 30px rgba(212, 175, 55, 0.22)' }}
               style={{
@@ -759,7 +759,7 @@ export const InvitationContent: React.FC = () => {
               <div style={{ padding: '8px 28px 28px', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '14px' }}>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
-                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>-™¥</span>
+                  <span style={{ color: '#C5A059', fontSize: '1rem' }}>♥</span>
                   <span style={{ height: '1px', flex: 1, background: 'rgba(212,175,55,0.4)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 700, letterSpacing: '0.2em', color: '#34251D', marginBottom: '8px' }}>
