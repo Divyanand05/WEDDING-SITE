@@ -3,7 +3,6 @@ import {
   addDoc,
   query,
   where,
-  orderBy,
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -33,8 +32,7 @@ export async function submitBlessing(name: string, message: string) {
 export async function getFeaturedBlessings(): Promise<Blessing[]> {
   const q = query(
     collection(db, COL),
-    where('featured', '==', true),
-    orderBy('createdAt', 'desc')
+    where('featured', '==', true)
   );
   const snap = await getDocs(q);
   return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Blessing));
